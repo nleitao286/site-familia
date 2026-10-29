@@ -1,0 +1,46 @@
+[
+  {
+    "id": "initial-condo",
+    "name": "Pagar condomínio",
+    "type": "task",
+    "freq": "monthly",
+    "due": "",
+    "person": "",
+    "notes": "",
+    "history": [],
+    "completed": false
+  },
+  {
+    "id": "initial-water",
+    "name": "Contagem de água",
+    "type": "meter",
+    "freq": "monthly",
+    "due": "",
+    "person": "",
+    "notes": "",
+    "history": [],
+    "completed": false
+  },
+  {
+    "id": "initial-electricity",
+    "name": "Contagem de luz",
+    "type": "meter",
+    "freq": "monthly",
+    "due": "",
+    "person": "",
+    "notes": "",
+    "history": [],
+    "completed": false
+  },
+  {
+    "id": "initial-gas",
+    "name": "Contagem de gás",
+    "type": "meter",
+    "freq": "monthly",
+    "due": "",
+    "person": "",
+    "notes": "",
+    "history": [],
+    "completed": false
+  }
+]
