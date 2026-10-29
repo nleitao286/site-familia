@@ -6,7 +6,7 @@ const DAYS=["sábado","domingo","segunda","terça","quarta","quinta","sexta"];
 const $=id=>document.getElementById(id);
 const safe=x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 const get=(key,fallback)=>{try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch(e){return fallback}};
-function set(key,data){try{localStorage.setItem(key,JSON.stringify(data));return true}catch(e){toast("Não foi possível guardar neste navegador.");return false}}
+function set(key,data){try{localStorage.setItem(key,JSON.stringify(data));window.GHSync?.changed(key,data);return true}catch(e){toast("Não foi possível guardar neste navegador.");return false}}
 const uid=()=>typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
 function toast(message){const el=$("toast");if(!el)return;el.textContent=message;el.classList.remove("hidden");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),2900)}
 function isoDate(d){const pad=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
@@ -164,4 +164,9 @@ function initTasks(){
  render();
 }
 const page=document.body.dataset.page;
-try{if(page==="index")initHome();else if(page==="menu")initMenu();else if(page==="viaturas")initVehicles();else if(page==="compras")initShopping();else if(page==="compromissos")initTasks()}catch(err){console.error(err);toast("Ocorreu um problema ao carregar esta área.")}
+async function boot(){
+ try{await window.GHSync?.load()}catch(err){console.warn("Falha ao carregar ficheiros JSON do GitHub:",err)}
+ try{if(page==="index")initHome();else if(page==="menu")initMenu();else if(page==="viaturas")initVehicles();else if(page==="compras")initShopping();else if(page==="compromissos")initTasks()}catch(err){console.error(err);toast("Ocorreu um problema ao carregar esta área.")}
+ window.GHSync?.render();
+}
+boot();
