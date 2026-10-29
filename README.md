@@ -1,25 +1,41 @@
-# Site da família
+# A nossa família
 
-Site estático da Filipa, Nuno, Martim e Madalena.
+Site estático em português de Portugal para **Filipa, Nuno, Martim e Madalena**.
 
 ## Páginas
-- `index.html`: página inicial.
-- `menu.html`: planeador semanal de refeições para quatro pessoas.
 
-## Funcionalidades do menu
-- Planeamento de sábado a sexta-feira, com pequeno-almoço, almoço, jantar e lanches individuais.
-- Ideias personalizadas, opção «Fazer salada», contador e impressão A4 horizontal.
-- Exportação/importação de cópia de segurança em JSON.
+- **index.html** — início, resumo de artigos, viaturas e prazos próximos; exportação e importação de todos os dados.
+- **menu.html** — apenas **almoços e jantares**, de sábado a sexta-feira, com listas de pratos inicialmente vazias, possibilidade de adicionar ideias, opção «Fazer salada» e impressão em A4 horizontal.
+- **viaturas.html** — registo de viaturas, matrícula, responsável, seguradora/apólice, validade do seguro, próxima inspeção, manutenções, quilómetros e pneus. Permite editar e eliminar.
+- **compras.html** — lista de compras com artigo, quantidade e familiar que o acrescentou; marcar como comprado, apagar e partilhar por texto.
+- **compromissos.html** — tarefas periódicas, responsáveis, próximas datas, conclusão, histórico e registo de leitura de contadores. Tem quatro exemplos iniciais: pagar condomínio e contagens de água, luz e gás.
 
-## Dados e privacidade
-Os dados são guardados **apenas no navegador** (`localStorage`), não são sincronizados entre dispositivos. Publicar em GitHub Pages disponibiliza as páginas publicamente; **não insira dados sensíveis** no site. O código inclui nomes da família.
+Os compromissos de exemplo têm periodicidade mensal **provisória**, editável, e nenhuma data de vencimento predefinida.
 
-## Publicar com GitHub Pages
-1. Criar um repositório GitHub e enviar todos os ficheiros desta pasta para a raiz.
-2. Em **Settings → Pages**, escolher **Deploy from a branch**, branch `main`, diretoria `/ (root)` e guardar.
-3. Abrir o endereço disponibilizado pelo GitHub Pages.
+## Armazenamento, partilha e privacidade
 
-O site não necessita de servidor nem de base de dados. O Google Fonts do `menu.html` requer internet para carregar as fontes personalizadas (há alternativas locais).
+Esta versão **guarda dados apenas no browser (localStorage)**. A atribuição dos artigos a membros da família identifica o autor escolhido no formulário; **não é autenticação**. Os dados **não são partilhados nem sincronizados automaticamente** entre os telemóveis dos familiares.
 
-## Configuração
-Editar o bloco `CONFIGURAÇÃO` em `menu.html` para mudar nomes, fruta e opções de refeições. A Filipa e o Nuno partilham as listas de lanches MA/TA, enquanto Martim e Madalena usam ME/TE por defeito. Estas associações são provisórias.
+A página inicial permite **exportar uma cópia de segurança JSON** e importá-la noutro navegador. Importar substitui os dados atuais nesse dispositivo. A lista de compras pode ser partilhada como texto (isso não sincroniza a aplicação).
+
+O código está num repositório público e, se for publicado com GitHub Pages, as páginas serão públicas. **Não há proteção por palavra-passe, notificações automáticas nem base de dados remota.** Os valores introduzidos nos formulários não são enviados para o GitHub; ficam no navegador utilizado.
+
+Para permitir que Filipa, Nuno, Martim e Madalena editem **a mesma lista em tempo real**, será necessário integrar um serviço de autenticação e base de dados, com regras de acesso (por exemplo, Supabase ou Firebase). Não publicar segredos de servidor nem credenciais neste repositório.
+
+## Estrutura
+
+- `index.html`, `menu.html`, `viaturas.html`, `compras.html`, `compromissos.html`
+- `styles.css` — estilos responsivos e de impressão.
+- `app.js` — lógica das páginas e armazenamento local, sem bibliotecas externas.
+
+## Publicar
+
+Em **GitHub → Settings → Pages → Build and deployment**, selecionar **Deploy from a branch**, `main` e `/ (root)`. O endereço habitual será `https://nleitao286.github.io/site-familia/` quando o Pages estiver ativo.
+
+## Migração do menu original
+
+Se existirem dados anteriores no mesmo domínio/navegador, ao abrir o novo menu pela primeira vez o site procura `menu-semana` e transfere as escolhas de **almoço e jantar** e ideias personalizadas para o novo formato, respeitando a semana que estava escolhida. Pequenos-almoços e lanches deixam de aparecer. As listas predefinidas de almoço/jantar continuam vazias.
+
+## Verificação
+
+O JavaScript foi validado sintaticamente e foi realizado um teste de inicialização das cinco páginas. Validar visualmente num navegador antes de utilização regular.
