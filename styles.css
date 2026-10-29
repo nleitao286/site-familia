@@ -164,3 +164,22 @@ button[hidden],.btn[hidden]{display:none!important}
 @media(max-width:1270px){.sync-panel{margin-left:25px;margin-right:25px}}
 @media(max-width:630px){.sync-panel{margin:16px!important;padding:14px;display:block}.sync-actions{margin-top:12px}.sync-caption{min-width:0}.sync-login{right:auto;left:0}.sync-fields{display:block}.sync-fields button{margin-top:8px}.sync-actions button{font-size:10px}.sync-details summary{font-size:10px}}
 @media print{.sync-panel{display:none!important}}
+
+/* Proteções de gravação e recuperação */
+.sync-panel[data-sync-status="pending"]{border:2px solid var(--red);background:#fff1f3;box-shadow:0 8px 25px rgba(200,16,46,.10)}
+.sync-panel[data-sync-status="pending"] .sync-indicator{animation:pulse-record 1.6s ease-in-out infinite}
+.sync-panel[data-sync-status="pending"] #sync-status{color:#9b0b23;font-weight:800;font-size:13px}
+.sync-panel[data-sync-status="pending"] #sync-state{color:#a20d24}
+.sync-panel[data-sync-status="readonly"]{border-left-width:5px}
+.sync-panel[data-sync-status="readonly"] #sync-state{color:#b23827}
+.sync-panel[data-sync-status="connected"] .sync-indicator{background:#168149}
+.sync-panel[data-sync-status="connected"] #sync-state{color:#168149}
+.notice{color:#642f34;border-left-width:5px;border-left-color:#bc1933;background:#fff4f5;font-size:13px}
+.recovery-entry{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid #dfdfe0}
+.recovery-entry strong{font-size:14px}
+.recovery-entry details{position:relative}
+.recovery-entry summary{list-style:none;border:1px solid #d0d2d4;font-size:11px;font-weight:800;padding:10px 12px;cursor:pointer}
+.recovery-code{white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;background:#f3f4f5;border:1px solid #dadcdf;padding:13px;font:12px/1.5 monospace;max-width:100%;width:min(750px,80vw)}
+@keyframes pulse-record{50%{opacity:.3}}
+@media(prefers-reduced-motion:reduce){.sync-panel[data-sync-status="pending"] .sync-indicator{animation:none}}
+@media(max-width:630px){.recovery-code{width:min(100%,calc(100vw - 75px))}.recovery-entry{display:block}.recovery-entry .toolbar{margin-top:10px}.sync-actions .btn{font-size:10px;min-height:34px;padding:7px 11px}}
