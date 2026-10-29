@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "b206d4f1-41c6-4cee-8f0f-5f6d97a31b83",
+    "name": "Sumos",
+    "qty": "3",
+    "person": "Nuno",
+    "done": false,
+    "addedAt": "2026-10-29T16:18:01.461Z"
+  },
+  {
+    "id": "dff2e478-99f0-4b0b-8f93-3dd19cf633a0",
+    "name": "Dove Gel",
+    "qty": "20",
+    "person": "Nuno",
+    "done": false,
+    "addedAt": "2026-10-29T16:18:27.164Z"
+  },
+  {
+    "id": "2f054852-20cc-4de2-8586-f8631635d80b",
+    "name": "Chocolate",
+    "qty": "2",
+    "person": "Nuno",
+    "done": false,
+    "addedAt": "2026-10-29T16:18:42.775Z"
+  }
+]
