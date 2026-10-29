@@ -135,7 +135,7 @@ const G={
   const disconnect=document.getElementById("sync-disconnect");
   if(disconnect)disconnect.hidden=!this.token;
   const publish=document.getElementById("sync-publish");
-  if(publish)publish.hidden=!(this.token&&pending.length);
+  if(publish){publish.hidden=!pending.length;publish.textContent="GRAVAR NO GITHUB";}
   const sync=document.getElementById("sync-connect");
   if(sync)sync.textContent=this.token?"VERIFICAR ACESSO":"LIGAR GITHUB";
   const statusEl=document.getElementById("sync-status");
@@ -183,7 +183,7 @@ const G={
   document.getElementById("sync-connect")?.addEventListener("click",()=>this.connect());
   document.getElementById("sync-disconnect")?.addEventListener("click",()=>this.disconnect());
   document.getElementById("sync-reload")?.addEventListener("click",()=>this.reload());
-  document.getElementById("sync-publish")?.addEventListener("click",async()=>{if(!confirm("Publicar as alterações locais no GitHub? Confirma que são os dados que queres partilhar."))return;await this.flushAll()});
+  document.getElementById("sync-publish")?.addEventListener("click",async()=>{if(!this.token){const d=document.querySelector(".sync-details");if(d)d.open=true;status("⚠ As alterações ainda NÃO foram guardadas no GitHub. É necessário introduzir um token com acesso de escrita para publicar.");document.getElementById("sync-token")?.focus();return}if(!confirm("Gravar as alterações locais no GitHub?"))return;await this.flushAll()});
   const token=document.getElementById("sync-token");
   token?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();this.connect()}});
  }
