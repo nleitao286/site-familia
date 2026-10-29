@@ -83,8 +83,8 @@ const G={
   }));
   this.initialised=true;
   this.attach();
-  if(!ok)status("Sem ligação aos ficheiros GitHub. Os dados locais continuam disponíveis.");
-  else this.render();
+  this.render();
+  if(!ok)status("⚠ Sem ligação aos ficheiros GitHub. Não é possível confirmar a leitura dos dados partilhados.");
   if(this.token)for(const topic of topics){if(this.dirty[topic]&&this.loaded[topic])this.schedule(topic)}
 
  },
@@ -119,7 +119,14 @@ const G={
    this.sha[topic]=r.content.sha;
    this.snapshots[topic]=snapshot;this.saveSnapshots();
    if(localStorage.getItem(localKey)===snapshot){delete this.dirty[topic];this.saveDirty()}
-   this.render();status("✓ GRAVADO NO GITHUB · "+names[topic]);return true;
+   this.render();
+   const remaining=this.topics().filter(t=>this.dirty[t]);
+   if(!remaining.length){
+     status("✓ GRAVADO NO GITHUB · "+names[topic]);
+     const toast=document.getElementById("toast");
+     if(toast){toast.textContent="✓ GRAVADO NO GITHUB · "+names[topic];toast.classList.remove("hidden");setTimeout(()=>toast.classList.add("hidden"),4000)}
+   }
+   return true;
   }catch(e){status("Erro ao guardar "+names[topic]+": "+e.message+". Os dados continuam neste navegador.");return false}
   finally{delete this.saving[topic];if(this.token&&this.dirty[topic]&&localStorage.getItem(localKey)!==snapshot)this.schedule(topic)}
  },
@@ -154,7 +161,7 @@ const G={
    if(!info?.permissions?.push)throw new Error("Esta conta não tem permissão de escrita no repositório.");
    this.token=token;sessionStorage.setItem(SESSION_KEY,token);
    if(input)input.value="";
-   this.render();status("Ligação autenticada. Podes publicar alterações locais. Só está guardado no GitHub quando aparecer a confirmação.");
+   this.render();if(!this.topics().some(topic=>this.dirty[topic]))status("Ligação autenticada. Sem alterações por publicar.");
    for(const topic of this.topics())if(this.dirty[topic]&&this.loaded[topic])this.schedule(topic);
   }catch(e){status("Não foi possível ligar: "+e.message)}
  },
