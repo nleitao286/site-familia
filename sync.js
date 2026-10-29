@@ -119,7 +119,7 @@ const G={
    this.sha[topic]=r.content.sha;
    this.snapshots[topic]=snapshot;this.saveSnapshots();
    if(localStorage.getItem(localKey)===snapshot){delete this.dirty[topic];this.saveDirty()}
-   status("✓ GRAVADO NO GITHUB · "+names[topic]);return true;
+   this.render();status("✓ GRAVADO NO GITHUB · "+names[topic]);return true;
   }catch(e){status("Erro ao guardar "+names[topic]+": "+e.message+". Os dados continuam neste navegador.");return false}
   finally{delete this.saving[topic];if(this.token&&this.dirty[topic]&&localStorage.getItem(localKey)!==snapshot)this.schedule(topic)}
  },
