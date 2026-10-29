@@ -1,47 +1,63 @@
 # A nossa família
 
-Site estático em português de Portugal para **Filipa, Nuno, Martim e Madalena**.
+Site estático da **Filipa, Nuno, Martim e Madalena**, com uma apresentação visual escura, fotografias de destaque, tipografia forte e apontamentos vermelhos.
 
-## Páginas
+## Módulos
 
-- **index.html** — início, resumo de artigos, viaturas e prazos próximos; exportação e importação de todos os dados.
-- **menu.html** — apenas **almoços e jantares**, de sábado a sexta-feira, com listas de pratos inicialmente vazias, possibilidade de adicionar ideias, opção «Fazer salada» e impressão em A4 horizontal.
-- **viaturas.html** — registo de viaturas, matrícula, responsável, seguradora/apólice, validade do seguro, próxima inspeção, manutenções, quilómetros e pneus. Permite editar e eliminar.
-- **compras.html** — lista de compras com artigo, quantidade e familiar que o acrescentou; marcar como comprado, apagar e partilhar por texto.
-- **compromissos.html** — tarefas periódicas, responsáveis, próximas datas, conclusão, histórico e registo de leitura de contadores. Tem quatro exemplos iniciais: pagar condomínio e contagens de água, luz e gás.
+| Página | Dados |
+| --- | --- |
+| `index.html` | Visão geral; exportar/importar cópia de segurança |
+| `menu.html` | Almoços e jantares, pratos novos, saladas e impressão A4 |
+| `viaturas.html` | Viaturas, seguros, inspeção, manutenção e pneus |
+| `compras.html` | Artigos, quantidades, responsável e estado de compra |
+| `compromissos.html` | Pagamentos, leituras de contadores e tarefas periódicas |
 
-Os compromissos de exemplo têm periodicidade mensal **provisória**, editável, e nenhuma data de vencimento predefinida.
+## Ficheiros JSON
 
-## Armazenamento, partilha e privacidade
+Os dados comuns estão no próprio repositório:
 
-Esta versão **guarda dados apenas no browser (localStorage)**. A atribuição dos artigos a membros da família identifica o autor escolhido no formulário; **não é autenticação**. Os dados **não são partilhados nem sincronizados automaticamente** entre os telemóveis dos familiares.
+- `dados/refeicoes.json`
+- `dados/viaturas.json`
+- `dados/compras.json`
+- `dados/compromissos.json`
 
-A página inicial permite **exportar uma cópia de segurança JSON** e importá-la noutro navegador. Importar substitui os dados atuais nesse dispositivo. A lista de compras pode ser partilhada como texto (isso não sincroniza a aplicação).
+Os ficheiros de refeições, viaturas e compras começam vazios. O de compromissos tem os quatro modelos iniciais: condomínio, água, luz e gás (sem datas de vencimento).
 
-O código está num repositório público e, se for publicado com GitHub Pages, as páginas serão públicas. **Não há proteção por palavra-passe, notificações automáticas nem base de dados remota.** Os valores introduzidos nos formulários não são enviados para o GitHub; ficam no navegador utilizado.
+O navegador carrega os ficheiros através da **GitHub REST API** quando uma página é aberta. O botão **Atualizar dados** recarrega o tema da página a partir do GitHub.
 
-Para permitir que Filipa, Nuno, Martim e Madalena editem **a mesma lista em tempo real**, será necessário integrar um serviço de autenticação e base de dados, com regras de acesso (por exemplo, Supabase ou Firebase). Não publicar segredos de servidor nem credenciais neste repositório.
+### Como permitir que uma pessoa guarde alterações no GitHub
 
-## Estilo visual
+1. Essa pessoa deve ter conta GitHub com permissão de escrita em `nleitao286/site-familia`. O proprietário do repositório pode adicionar colaboradores nas definições do GitHub.
+2. Em [GitHub → Fine-grained personal access tokens](https://github.com/settings/personal-access-tokens/new), criar **um token individual**. Selecionar apenas o repositório `site-familia`; em **Repository permissions → Contents**, escolher **Read and write**. Usar uma validade curta.
+3. No site, abrir **Acesso de edição**, introduzir o token no campo próprio e carregar em **Ligar GitHub**.
+4. Os dados alterados são guardados no navegador e, com sessão autenticada, enviados automaticamente para o ficheiro JSON correspondente. Se existirem alterações anteriores por publicar, usar **Publicar alterações**.
+5. No telemóvel de outro familiar, usar **Atualizar dados** para consultar os novos valores. Não existe atualização em tempo real (sem abrir/atualizar a página).
 
-Design renovado com inspiração **editorial e premium** no género do site da Triumph Motorcycles: cabeçalho escuro, tipografia de impacto, imagens amplas, navegação horizontal, secções de destaque e acentos vermelhos. A marca, os conteúdos e o logótipo Triumph não foram reproduzidos.
+**Não incluir tokens em ficheiros JSON, código, URL, mensagens nem fotografias.** Os tokens introduzidos no site são guardados apenas em **sessionStorage** da sessão atual do navegador. Não persistem na conta do GitHub nem no próprio repositório. Fechar o separador/sessão termina o acesso guardado. Para deixar de usar um token, carregar em **Desligar**; também é possível revogá-lo no GitHub.
 
-As imagens ilustrativas são carregadas externamente de **Unsplash** e as fontes de **Google Fonts**. Para as fotografias aparecerem é necessária ligação à internet; em caso de falha, surgem fundos escuros. O site mantém a navegação responsiva em telemóvel.
+### Gravação, conflitos e segurança
 
-## Estrutura
+- As alterações são enviadas através do endpoint oficial de atualização de conteúdo (`PUT /repos/.../contents/...`) com o `sha` do ficheiro atual.
+- Se outro familiar alterar o mesmo ficheiro desde o último carregamento, o site **recusa a gravação** e apresenta uma mensagem de conflito, em vez de substituir silenciosamente os dados. Para recuperar, fazer primeiro uma cópia local em **Início → Descarregar cópia**, depois carregar em **Atualizar dados**. A reconciliação manual de alterações ainda é necessária.
+- Na ausência de ligação à Internet ou de token válido, as alterações permanecem **apenas no navegador** até serem publicadas. O painel de sincronização assinala essa situação.
+- Dados locais anteriores à alteração da arquitetura são preservados quando houver conteúdo ainda não publicado. Pode ser necessário selecionar **Publicar alterações** na primeira ligação.
+- Cada gravação cria um commit no GitHub. Não é uma base de dados em tempo real, e não substitui uma solução multiutilizador com autenticação dedicada.
+- **Este repositório é público.** Todos os ficheiros JSON podem ser lidos por terceiros, e cada commit permanece no histórico. Não guardar nele apólices, matrículas, moradas, códigos, documentos ou outras informações privadas. Para dados confidenciais, será necessário um repositório privado e um backend seguro, ou uma base de dados com controlo de acessos.
+- Para leitura/edição das páginas não é necessário instalar software. As fotos ilustrativas são carregadas do Unsplash e as fontes do Google Fonts.
 
-- `index.html`, `menu.html`, `viaturas.html`, `compras.html`, `compromissos.html`
-- `styles.css` — estilos responsivos e de impressão.
-- `app.js` — lógica das páginas e armazenamento local, sem bibliotecas externas.
+## Estrutura técnica
 
-## Publicar
+- `styles.css` — apresentação e impressão;
+- `app.js` — funcionalidades dos quatro módulos e cópias locais;
+- `sync.js` — leitura/escrita dos ficheiros JSON na GitHub API, controlo de versões e painel de ligação;
+- `dados/*.json` — dados partilhados.
 
-Em **GitHub → Settings → Pages → Build and deployment**, selecionar **Deploy from a branch**, `main` e `/ (root)`. O endereço habitual será `https://nleitao286.github.io/site-familia/` quando o Pages estiver ativo.
+## Publicação
 
-## Migração do menu original
+Abrir **Settings → Pages → Build and deployment** no repositório, selecionar `Deploy from a branch`, branch `main` e pasta `/ (root)`. Depois, se GitHub Pages estiver ativado, o endereço previsto é:
 
-Se existirem dados anteriores no mesmo domínio/navegador, ao abrir o novo menu pela primeira vez o site procura `menu-semana` e transfere as escolhas de **almoço e jantar** e ideias personalizadas para o novo formato, respeitando a semana que estava escolhida. Pequenos-almoços e lanches deixam de aparecer. As listas predefinidas de almoço/jantar continuam vazias.
+https://nleitao286.github.io/site-familia/
 
-## Verificação
+## Limitações
 
-O JavaScript foi validado sintaticamente e foi realizado um teste de inicialização das cinco páginas. Validar visualmente num navegador antes de utilização regular.
+É um protótipo que usa tokens de acesso pessoais introduzidos diretamente no navegador para edição. Para uso regular por pessoas sem contas GitHub, a arquitetura recomendada é um pequeno serviço de autenticação com backend e permissões familiares, evitando que cada utilizador tenha de gerir um token. Não há notificações automáticas nem sincronização instantânea.
