@@ -22,6 +22,12 @@ O código está num repositório público e, se for publicado com GitHub Pages, 
 
 Para permitir que Filipa, Nuno, Martim e Madalena editem **a mesma lista em tempo real**, será necessário integrar um serviço de autenticação e base de dados, com regras de acesso (por exemplo, Supabase ou Firebase). Não publicar segredos de servidor nem credenciais neste repositório.
 
+## Estilo visual
+
+Design renovado com inspiração **editorial e premium** no género do site da Triumph Motorcycles: cabeçalho escuro, tipografia de impacto, imagens amplas, navegação horizontal, secções de destaque e acentos vermelhos. A marca, os conteúdos e o logótipo Triumph não foram reproduzidos.
+
+As imagens ilustrativas são carregadas externamente de **Unsplash** e as fontes de **Google Fonts**. Para as fotografias aparecerem é necessária ligação à internet; em caso de falha, surgem fundos escuros. O site mantém a navegação responsiva em telemóvel.
+
 ## Estrutura
 
 - `index.html`, `menu.html`, `viaturas.html`, `compras.html`, `compromissos.html`
