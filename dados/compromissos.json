@@ -1,5 +1,16 @@
 [
   {
+    "id": "e575e388-1e30-450a-835c-d5afb086c137",
+    "name": "Limpar a sala",
+    "freq": "weekly",
+    "due": "",
+    "person": "",
+    "notes": "",
+    "type": "task",
+    "history": [],
+    "completed": false
+  },
+  {
     "id": "initial-condo",
     "name": "Pagar condomínio",
     "type": "task",
