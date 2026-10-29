@@ -58,6 +58,25 @@ Abrir **Settings → Pages → Build and deployment** no repositório, seleciona
 
 https://nleitao286.github.io/site-familia/
 
+## Se fizeste alterações e não ficaram no GitHub
+
+Os dados do repositório só são alterados por uma pessoa autenticada com acesso de escrita. **A mensagem de que a informação está guardada no navegador não significa que esteja guardada no GitHub.**
+
+1. Abrir [Recuperar dados](recuperar.html) **no mesmo navegador, dispositivo e endereço** usados para introduzir as informações.
+2. Verificar o conteúdo encontrado. Escolher **Restaurar** na versão correta. O restauro marca o tema como **NÃO GRAVADO NO GITHUB**.
+3. Se existirem dados recuperados, fazer primeiro uma **cópia local** pela página de recuperação.
+4. Abrir a página desse tema, ligar um token GitHub com permissão de escrita, usar **GRAVAR NO GITHUB** e **confirmar a mensagem «GRAVADO NO GITHUB»**.
+5. Se estiver a aparecer «Conflito», não recarregar antes de descarregar uma cópia local.
+
+As modificações desta versão mantêm um histórico local de até 10 versões por tema, para futuras recuperações. Este histórico **não é um backup externo**: se o browser apagar o armazenamento local ou se foi utilizado outro browser, não é possível recuperar versões perdidas por esta via. Se o repositório ainda tiver os ficheiros iniciais, não existem alterações publicadas para recuperar do GitHub.
+
+### Avisos de gravação
+
+- O painel mostra **NÃO GRAVADO NO GITHUB** enquanto existirem alterações locais pendentes.
+- **GRAVAR NO GITHUB** pede credenciais caso ainda não exista ligação; nunca simula gravação sem confirmação.
+- Após a resposta da API, o painel indica **GRAVADO NO GITHUB** apenas quando a escrita foi confirmada.
+- Os ficheiros locais continuam disponíveis em `localStorage`, mesmo quando não existe sessão de edição.
+
 ## Limitações
 
 É um protótipo que usa tokens de acesso pessoais introduzidos diretamente no navegador para edição. Para uso regular por pessoas sem contas GitHub, a arquitetura recomendada é um pequeno serviço de autenticação com backend e permissões familiares, evitando que cada utilizador tenha de gerir um token. Não há notificações automáticas nem sincronização instantânea.
