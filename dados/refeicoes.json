@@ -1,7 +1,36 @@
 {
-  "weeks": {},
+  "weeks": {
+    "2026-10-24": {
+      "0": {
+        "A": {
+          "dish": "Hambúrguer",
+          "salad": true
+        },
+        "J": {
+          "dish": "Arroz de pato",
+          "salad": true
+        }
+      },
+      "1": {
+        "A": {
+          "dish": "Moules au frites",
+          "salad": true
+        },
+        "J": {
+          "dish": "Arroz de pato",
+          "salad": false
+        }
+      }
+    }
+  },
   "dishes": {
-    "A": [],
-    "J": []
+    "A": [
+      "Moules au frites",
+      "Hambúrguer"
+    ],
+    "J": [
+      "Peixe grelhado",
+      "Arroz de pato"
+    ]
   }
 }
