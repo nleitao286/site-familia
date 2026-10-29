@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "id": "eea6e318-267d-4c95-8732-e2c1f5c87067",
+    "name": "Triumph",
+    "plate": "",
+    "owner": "",
+    "insurer": "",
+    "policy": "",
+    "insurance": "",
+    "inspection": "",
+    "maintenanceLast": "",
+    "maintenanceNext": "",
+    "km": "",
+    "tires": "",
+    "tiresNext": "",
+    "notes": ""
+  },
+  {
+    "id": "4e362ed5-d569-4362-90b6-cd71f1670130",
+    "name": "Toyota",
+    "plate": "",
+    "owner": "",
+    "insurer": "",
+    "policy": "",
+    "insurance": "",
+    "inspection": "",
+    "maintenanceLast": "",
+    "maintenanceNext": "",
+    "km": "",
+    "tires": "",
+    "tiresNext": "",
+    "notes": ""
+  },
+  {
+    "id": "b5171ad1-6c3b-4c7d-bd07-c3522ff203b6",
+    "name": "Fiat",
+    "plate": "",
+    "owner": "",
+    "insurer": "",
+    "policy": "",
+    "insurance": "",
+    "inspection": "",
+    "maintenanceLast": "",
+    "maintenanceNext": "",
+    "km": "",
+    "tires": "",
+    "tiresNext": "",
+    "notes": ""
+  },
+  {
+    "id": "b941264c-3a48-4099-8606-301e44ff13a7",
+    "name": "Volvo",
+    "plate": "",
+    "owner": "",
+    "insurer": "",
+    "policy": "",
+    "insurance": "",
+    "inspection": "",
+    "maintenanceLast": "",
+    "maintenanceNext": "",
+    "km": "",
+    "tires": "",
+    "tiresNext": "",
+    "notes": ""
+  }
+]
