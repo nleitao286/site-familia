@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu semanal | Família</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=DM+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#F7F5EE;--ink:#1F2A22;--muted:#4A554D;--line:#CFCBB8;--accent:#2F5640;--soft:#E9EFE4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',Arial,sans-serif}
+.screen{max-width:1360px;margin:0 auto;padding:40px 48px;display:flex;flex-direction:column;gap:22px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.site-nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-bottom:15px;border-bottom:1px solid var(--line)}
+.site-nav a{color:var(--accent);text-decoration:none;font-weight:700}.site-nav .brand{font:600 23px Fraunces,serif}.site-nav .brand span{display:block;font:400 12px "DM Sans",sans-serif;color:var(--muted);margin-top:4px}.nav-active{border:1px solid var(--line);border-radius:999px;padding:10px 14px}
+h1{margin:0;font-family:'Fraunces',serif;font-weight:600;font-size:48px;color:var(--accent)}
+.sub{margin-top:6px;font-size:16px;color:var(--muted)}
+.controls{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.controls .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{font-size:14px;color:var(--muted)}
+input,select,textarea{font:16px 'DM Sans',Arial,sans-serif;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px}
+input[type=date]{min-height:44px;padding:0 12px}
+select{min-height:48px;padding:0 12px;width:100%}
+.btn{min-height:44px;padding:0 16px;border-radius:12px;border:none;background:var(--accent);color:#fff;font:600 15px 'DM Sans',Arial,sans-serif;cursor:pointer;white-space:nowrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{min-height:44px;padding:10px 16px;border-radius:999px;cursor:pointer;font:600 16px 'DM Sans',Arial,sans-serif;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.daytitle{font-family:'Fraunces',serif;font-size:30px}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 32px;align-items:start}
+.col{display:flex;flex-direction:column;gap:18px}
+.lbl{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.who{font-size:14px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.idea{display:flex;gap:8px}
+.idea input{flex:1;min-width:0;min-height:44px;padding:0 12px;font-size:15px}
+.chk{display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px;cursor:pointer}
+.chk input{width:20px;height:20px;margin:0}
+.fruta{padding:16px 20px;border-radius:12px;background:var(--soft);font-size:15px;line-height:1.5}
+details{font-size:14px}
+summary{cursor:pointer;font-weight:700;min-height:32px}
+.backup{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}
+.backup>div{flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px}
+textarea{width:100%;height:90px;padding:8px;border-radius:8px;font:12px monospace}
+@media (max-width:900px){.screen{padding:24px 16px}.cols{grid-template-columns:1fr}h1{font-size:36px}.controls{align-items:flex-start}}
+
+/* Folha A4 para imprimir */
+.sheet{display:none}
+@page{size:A4 landscape;margin:0}
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .screen{display:none !important}
+  .sheet{display:flex !important}
+}
+.sheet{width:297mm;height:210mm;padding:10mm;flex-direction:column;background:#fff;color:#000;font-family:Calibri,Carlito,Arial,sans-serif;overflow:hidden}
+.band{height:11mm;line-height:11mm;flex:none;background:#000;color:#fff;text-align:center;font-size:20pt}
+.grid{flex:1;display:grid;grid-template-columns:20mm 1fr 1.3fr .8fr 1.4fr 1.1fr;grid-template-rows:6.5mm repeat(7,1fr);border:1px solid #000;border-top:none}
+.c{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;border-left:1px solid #000;padding:1mm 2mm;font-size:9.5pt;line-height:1.25}
+.grid>.c:nth-child(6n+1){border-left:none}
+.hd{font-size:8.5pt;font-weight:700;border-bottom:1.5px solid #000}
+.hd.blk,.c.day{background:#000;color:#fff}
+.c.day{font-size:10pt}
+.thin{border-top:1px solid #000}
+.thick{border-top:2px solid #000}
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <nav class="site-nav" aria-label="Navegação principal"><a class="brand" href="index.html">Família <span>Filipa · Nuno · Martim · Madalena</span></a><a class="nav-active" href="menu.html" aria-current="page">Menu semanal</a></nav>
+  <div class="top">
+    <div>
+      <h1>Menu semanal</h1>
+      <div class="sub" id="status"></div>
+    </div>
+    <div class="controls">
+      <div class="row">
+        <span class="hint">Início da semana (sábado)</span>
+        <input type="date" id="inicio" aria-label="Início da semana">
+        <button class="btn" id="print">Imprimir semana</button>
+      </div>
+      <div class="hint">Abre a janela de impressão da folha A4 (o mesmo que Ctrl+P)</div>
+    </div>
+  </div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="daytitle" id="daytitle"></div>
+  <div class="cols">
+    <div class="col" id="col1"></div>
+    <div class="col" id="col2"></div>
+    <div class="col" id="col3"></div>
+  </div>
+  <details>
+    <summary>Cópia de segurança (ideias e escolhas)</summary>
+    <div class="backup">
+      <div>
+        <span>Copia este texto e guarda-o (serve para passar os dados para outro computador ou browser).</span>
+        <textarea id="exp" readonly aria-label="Dados para copiar"></textarea>
+        <button class="btn" id="copy" style="align-self:flex-start">Copiar</button>
+      </div>
+      <div>
+        <span>Colar dados guardados e carregar:</span>
+        <textarea id="imp" aria-label="Colar dados"></textarea>
+        <button class="btn" id="load" style="align-self:flex-start">Carregar</button>
+      </div>
+    </div>
+  </details>
+</div>
+
+<div class="sheet">
+  <div class="band" id="band"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+/* ======================= CONFIGURAÇÃO =======================
+   Altera aqui os nomes, a fruta e as listas de opções.        */
+const NOMES = ["Filipa", "Nuno", "Martim", "Madalena"];
+// Filipa e Nuno usam listas MA / TA; Martim e Madalena usam ME / TE.
+// É possível definir listas específicas para cada pessoa, se necessário.
+const FRUTA = "banana · pera · pêssego · laranja · tangerinas · kiwis · frutos vermelhos · maçã";
+const O = {
+  P: ["Cevada com pão de centeio e queijo fatiado", "Cevada com pão de centeio e presunto", "Cevada com pão de centeio e fiambre de aves", "Iogurte com pão de centeio e fiambre de aves", "Iogurte sólido com fruta e cereais", "Iogurte grego com mirtilos e cereais", "Iogurte com pão com manteiga", "Iogurte com tortitas e manteiga de amendoim", "Cereais com leite", "Leite e torrada"],
+  A: ["Resto do dia anterior", "Costeletas com salada", "Omelete de queijo e fiambre com salada", "Sandes de hambúrguer com tomate e alface", "Espetadas de peru com arroz e salada", "Lombinhos de pescada com alho e coentros · Cookidoo", "Salada de frango · Cookidoo", "Penne com atum e salada · Cookidoo", "Mini pizzas com batata frita e uvas", "Almoçar fora"],
+  J: ["Arroz de lulas · Cookidoo", "Caldeirada de lulas · Cookidoo", "Tagliatelle com frango e ervilhas · Cookidoo", "Lombo de salmão em papelote com puré de espinafres · Cookidoo", "Pescada com molho de tomate fresco · Cookidoo", "Linguine com molho de cogumelos e peru · Cookidoo", "Penne com frango e béchamel · Cookidoo", "Empadão de atum com salada · Cookidoo", "Empadão de carne com salada · Cookidoo", "Empadão de arroz com cogumelos e frango · Cookidoo", "Gratinado de salmão e legumes · Cookidoo", "Esparguete preto com camarão · Cookidoo", "Esparguete à carbonara com salada · Cookidoo", "Esparguete de açafrão com peixe · Cookidoo", "Esparguete de frutos do mar · Cookidoo", "Salada de massa e grão · Cookidoo", "Salada russa · Cookidoo", "Massada de peixe · Cookidoo", "Cuscuz com limão, frango e mel · Cookidoo", "Arroz de frango com ervilhas · Cookidoo", "Caril de frango com arroz · Cookidoo", "Sopa e frango com arroz · Cookidoo", "Carne estufada com puré de batata e cenoura · Cookidoo", "Peru estufado com feijão preto · Cookidoo", "Frango com cerveja e arroz no micro-ondas · Cookidoo", "Salmão ao vapor com puré de cenoura · Cookidoo", "Papelotes de salmão com cuscuz e tomate seco · Cookidoo", "Risoto de frango, espinafres e alho-francês · Cookidoo", "Douradinhos com arroz de cenoura · Cookidoo", "Bifes de frango com arroz de manteiga e salada", "Bifinhos de frango com massinhas e salada", "Bifes de frango com esparguete e salada", "Bifes de peru com batata cozida, ovo e grão", "Bifes de peru com esparguete cor de laranja e salada", "Pernas de frango com arroz basmati e salada", "Espetadas com arroz de manteiga e salada", "Rolo de carne com arroz basmati e salada", "Peixe-espada com arroz de tomate e brócolos", "Robalo com batata cozida, feijão-verde e ovo", "Linguado grelhado com batata cozida e ovo", "Salmão assado no forno com batata e grelos", "Massa de atum com salada", "Omelete de queijo e fiambre com salada", "Polvo à lagareiro"],
+  MA: ["Amêndoas (10 g) + clementina", "Amêndoas (10 g) + kiwi", "Amêndoas (10 g) + maçã", "Amêndoas (10 g) + banana", "Ovo cozido + amêndoas (10 g)", "1 gelatina + amêndoas", "2 tostas extra finas + Babybel", "Marinheiras (2) com Babybel", "Vaca que ri com palitos", "Banana com frutos secos", "Clementina com nozes (10 g)"],
+  ME: ["Sumo de fruta + Babybel", "Sumo de fruta + amêndoas", "Sumo de fruta + 2 marinheiras", "Sumo de fruta + nozes (10 g)", "Banana com nozes (10 g)", "Amêndoas (10 g) + clementina", "1 gelatina + amêndoas", "Marinheiras (2) com Babybel", "Ovo cozido + amêndoas (10 g)", "Clementina com nozes (10 g)", "Vaca que ri com palitos"],
+  TA: ["Uvas + nozes (10 g)", "Banana com nozes (10 g)", "Iogurte líquido, maçã e nozes", "Iogurte líquido, maçã, Babybel", "Iogurte líquido + crackers", "Iogurte + 2 tostas e Babybel", "Iogurte líquido + tosta queijo", "Tortitas com manteiga amendoim", "Iogurte, 2 marinheiras, Babybel"],
+  TE: ["Iogurte sólido, banana e nozes", "Iogurte sólido + tosta queijo", "Iogurte, uvas e gressinos", "Iogurte, maçã e Babybel", "Iogurte, pêra, 2 marinheiras", "Iogurte líquido, 4 marinheiras", "Banana com nozes (10 g)", "Iogurte líquido + crackers", "Compal com bolachas belgas"]
+};
+/* ===================== FIM DA CONFIGURAÇÃO ===================== */
+
+const DAYS = ["sábado", "domingo", "segunda", "terça", "quarta", "quinta", "sexta"];
+const KEY = "familia-menu-semana-v1";
+const pad = n => String(n).padStart(2, "0");
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const defIni = () => { const n = new Date(); const d = new Date(n.getFullYear(), n.getMonth(), n.getDate() + ((6 - n.getDay() + 7) % 7)); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+const dateOf = (ini, i) => { const p = ini.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2] + i); };
+const dm = d => pad(d.getDate()) + "/" + pad(d.getMonth() + 1);
+
+// Campos de cada dia: chave, rótulo, lista de opções, se é por pessoa, se tem salada
+const COLS = [
+  [{ k: "P", label: "Pequeno-almoço", lk: "P" }, { k: "A", label: "Almoço", lk: "A", salad: true }, { k: "J", label: "Jantar", lk: "J", salad: true }],
+  [{ k: "R", label: NOMES[0], lk: "MA", who: true }, { k: "C", label: NOMES[1], lk: "MA", who: true }, { k: "E", label: NOMES[2], lk: "ME", who: true }, { k: "D", label: NOMES[3], lk: "ME", who: true }],
+  [{ k: "TR", label: NOMES[0], lk: "TA", who: true }, { k: "TC", label: NOMES[1], lk: "TA", who: true }, { k: "TE", label: NOMES[2], lk: "TE", who: true }, { k: "TD", label: NOMES[3], lk: "TE", who: true }]
+];
+const WHO = [[NOMES[0], "R", "TR"], [NOMES[1], "C", "TC"], [NOMES[2], "E", "TE"], [NOMES[3], "D", "TD"]];
+
+let S = { sel: {}, inicio: "", ideas: {} };
+try { const l = JSON.parse(localStorage.getItem(KEY) || "null"); if (l) S = { sel: l.sel || {}, inicio: l.inicio || "", ideas: l.ideas || {} }; } catch (e) {}
+let day = 0, drafts = {}, note = "", saved = null;
+
+const ini = () => S.inicio || defIni();
+const all = lk => O[lk].concat((S.ideas[lk] || []).filter(t => !O[lk].includes(t)));
+const $ = id => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); saved = true; } catch (e) { saved = false; }
+}
+function choose(k, v) {
+  if (v) S.sel[k] = v; else delete S.sel[k];
+  save(); render();
+}
+
+function field(f) {
+  const k = day + f.k, cur = S.sel[k] || "", opts = all(f.lk);
+  const wrap = el("div", "field");
+  wrap.appendChild(el("div", f.who ? "who" : "lbl", f.label));
+  const s = el("select");
+  s.setAttribute("aria-label", f.label);
+  const add = (v, t) => { const o = el("option", null, t); o.value = v; s.appendChild(o); };
+  add("", "Escolher…");
+  if (cur && !opts.includes(cur)) add(cur, cur);
+  opts.forEach(t => add(t, t));
+  s.value = cur;
+  s.onchange = () => choose(k, s.value);
+  wrap.appendChild(s);
+
+  const row = el("div", "idea");
+  const inp = el("input");
+  inp.placeholder = "ou escrever a minha ideia";
+  inp.setAttribute("aria-label", "Escrever a minha ideia para " + f.label);
+  inp.value = drafts[f.k] || "";
+  inp.oninput = () => { drafts[f.k] = inp.value; };
+  const use = () => {
+    const t = (inp.value || "").trim();
+    if (!t) return;
+    drafts[f.k] = "";
+    const list = S.ideas[f.lk] || [];
+    if (!O[f.lk].includes(t) && !list.includes(t)) S.ideas[f.lk] = [...list, t];
+    note = "Ideia guardada na lista";
+    choose(k, t);
+  };
+  inp.onkeydown = e => { if (e.key === "Enter") use(); };
+  const b = el("button", "btn", "Usar");
+  b.onclick = use;
+  row.append(inp, b);
+  wrap.appendChild(row);
+
+  if (f.salad) {
+    const lab = el("label", "chk");
+    const cb = el("input");
+    cb.type = "checkbox";
+    cb.checked = !!S.sel[k + "S"];
+    cb.onchange = () => choose(k + "S", cb.checked ? "1" : "");
+    lab.append(cb, document.createTextNode("Fazer salada"));
+    wrap.appendChild(lab);
+  }
+  return wrap;
+}
+
+function render() {
+  const i0 = ini();
+  $("inicio").value = i0;
+  const filled = Object.entries(S.sel).filter(([k, v]) => v && !/S$/.test(k)).length;
+  const st = saved === false ? "Não foi possível gravar neste browser" : saved ? "Gravado neste browser" : "";
+  $("status").textContent = [note, st, filled + " de 77 escolhas feitas"].filter(Boolean).join(" · ");
+
+  const tabs = $("tabs");
+  tabs.innerHTML = "";
+  DAYS.forEach((d, i) => {
+    const b = el("button", "tab" + (i === day ? " on" : ""), cap(d).slice(0, 3) + " " + dateOf(i0, i).getDate());
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", i === day);
+    b.onclick = () => { day = i; drafts = {}; render(); };
+    tabs.appendChild(b);
+  });
+  $("daytitle").textContent = cap(DAYS[day]) + " · " + dm(dateOf(i0, day));
+
+  const c1 = $("col1"), c2 = $("col2"), c3 = $("col3");
+  [c1, c2, c3].forEach(c => c.innerHTML = "");
+  COLS[0].forEach(f => c1.appendChild(field(f)));
+  const fr = el("div", "fruta");
+  fr.innerHTML = "<b>Fruta permitida:</b> " + esc(FRUTA) + ".";
+  c1.appendChild(fr);
+  c2.appendChild(el("div", "lbl", "Meio da manhã"));
+  COLS[1].forEach(f => c2.appendChild(field(f)));
+  c3.appendChild(el("div", "lbl", "Meio da tarde"));
+  COLS[2].forEach(f => c3.appendChild(field(f)));
+
+  $("exp").value = JSON.stringify(S);
+  renderSheet();
+}
+
+function renderSheet() {
+  const i0 = ini(), sel = S.sel;
+  $("band").textContent = "Menu Semanal - " + dm(dateOf(i0, 0)) + " a " + dm(dateOf(i0, 6));
+  const heads = ["Pequeno-Almoço", "Meio da manhã", "Almoço", "Meio da tarde", "Jantar"];
+  let h = '<div class="c hd blk"></div>' + heads.map(t => '<div class="c hd">' + t + "</div>").join("");
+  const lines = (i, ix) => WHO.filter(w => sel[i + w[ix]]).map(w => "<div><b>" + esc(w[0]) + ":</b> " + esc(sel[i + w[ix]]) + "</div>").join("");
+  const meal = (i, k) => "<div>" + esc(sel[i + k] || "") + "</div>" + (sel[i + k + "S"] ? "<div><b>(fazer salada)</b></div>" : "");
+  DAYS.forEach((d, i) => {
+    const b = i === 0 ? "" : i === 2 ? " thick" : " thin";
+    const cell = html => '<div class="c' + b + '">' + html + "</div>";
+    h += '<div class="c day' + b + '"><div>' + cap(d) + "</div><div>" + dm(dateOf(i0, i)) + "</div></div>";
+    h += cell(esc(sel[i + "P"] || "")) + cell(lines(i, 1)) + cell(meal(i, "A")) + cell(lines(i, 2)) + cell(meal(i, "J"));
+  });
+  $("grid").innerHTML = h;
+}
+
+$("inicio").onchange = e => { if (e.target.value) { S.inicio = e.target.value; save(); render(); } };
+$("print").onclick = () => window.print();
+$("copy").onclick = () => {
+  const t = $("exp");
+  t.select();
+  try { navigator.clipboard.writeText(t.value); } catch (e) { document.execCommand("copy"); }
+  note = "Dados copiados"; render();
+};
+$("load").onclick = () => {
+  try {
+    const d = JSON.parse($("imp").value);
+    const ideas = { ...S.ideas };
+    Object.keys(d.ideas || {}).forEach(k => { ideas[k] = [...new Set([...(ideas[k] || []), ...d.ideas[k]])]; });
+    S = { sel: d.sel || {}, inicio: d.inicio || S.inicio, ideas };
+    $("imp").value = "";
+    note = "Dados carregados";
+    save(); render();
+  } catch (e) { note = "O texto colado não é válido"; render(); }
+};
+
+render();
+</script>
+</body>
+</html>
