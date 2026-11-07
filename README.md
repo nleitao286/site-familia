@@ -1,6 +1,23 @@
-# A nossa família
+# SITE-FAMILIA — A nossa família
 
 Site estático da **Filipa, Nuno, Martim e Madalena**, com uma apresentação visual escura, fotografias de destaque, tipografia forte e apontamentos vermelhos.
+
+
+## Para trabalhar no Codex
+
+**Repositório:** https://github.com/nleitao286/site-familia
+
+O projeto já está organizado para abrir no Codex e contém instruções e tarefas:
+
+- [AGENTS.md](AGENTS.md) — regras de desenvolvimento para o Codex;
+- [docs/CODEX.md](docs/CODEX.md) — como abrir o repositório no Codex e prompt de arranque;
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — arquitetura real e riscos;
+- [docs/ROADMAP.md](docs/ROADMAP.md) — plano por prioridades;
+- [GitHub Issues](https://github.com/nleitao286/site-familia/issues) — lista de tarefas para implementar.
+
+**Estado em novembro de 2026:** o projeto Supabase `rhpmebmytzmfwitjrfau` existe e os quatro temas foram importados, mas **o site principal ainda usa `sync.js` com JSON no GitHub e dados locais**. A página `entrar.html` usa Supabase Auth separadamente. A autenticação e a sincronização entre navegadores **ainda não estão terminadas**. Foi observado redirecionamento de magic link para `localhost:3000` e limite de envio de e-mails. Consultar [a arquitetura](docs/ARCHITECTURE.md) antes de alterar produção.
+
+O repositório é **público**; não colocar dados privados ou segredos no código. O acesso ao Supabase deve depender de Auth + RLS.
 
 ## Módulos
 
@@ -21,7 +38,7 @@ Os dados comuns estão no próprio repositório:
 - `dados/compras.json`
 - `dados/compromissos.json`
 
-Os ficheiros de refeições, viaturas e compras começam vazios. O de compromissos tem os quatro modelos iniciais: condomínio, água, luz e gás (sem datas de vencimento).
+Os ficheiros JSON antigos já contêm os dados recuperados do Chrome, importados também no Supabase em outubro/novembro de 2026. **Não são dados privados:** estão acessíveis publicamente neste repositório e no histórico. No momento, o site continua a ler e gravar estes JSON quando há um token GitHub válido.
 
 O navegador carrega os ficheiros através da **GitHub REST API** quando uma página é aberta. O botão **Atualizar dados** recarrega o tema da página a partir do GitHub.
 
@@ -78,5 +95,7 @@ As modificações desta versão mantêm um histórico local de até 10 versões 
 - Os ficheiros locais continuam disponíveis em `localStorage`, mesmo quando não existe sessão de edição.
 
 ## Limitações
+
+**A migração de autenticação e armazenamento ainda está incompleta.** As outras páginas não obrigam a iniciar sessão no Supabase. O acesso da família à nova base de dados não deve ser considerado funcional até testar Auth, permissões e atualização entre browsers.
 
 É um protótipo que usa tokens de acesso pessoais introduzidos diretamente no navegador para edição. Para uso regular por pessoas sem contas GitHub, a arquitetura recomendada é um pequeno serviço de autenticação com backend e permissões familiares, evitando que cada utilizador tenha de gerir um token. Não há notificações automáticas nem sincronização instantânea.
