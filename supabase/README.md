@@ -1,6 +1,6 @@
 # Migração para Supabase — Site da Família
 
-O site continua a funcionar no GitHub Pages com o sistema atual até a ligação Supabase estar ativa. **Os ficheiros nesta pasta não criam um projeto Supabase por si só.**
+O site continua a funcionar no GitHub Pages com o sistema atual até a ligação Supabase estar ativa. O projeto e os quatro documentos já existem no Supabase, mas o cliente web ainda não foi transferido. **Os ficheiros nesta pasta não criam um projeto Supabase por si só.**
 
 ## Preparação no Supabase
 
@@ -33,8 +33,8 @@ O site continua a funcionar no GitHub Pages com o sistema atual até a ligação
 
 - [x] Esquema PostgreSQL e políticas preparadas no repositório.
 - [x] Script de importação dos dados atuais preparado.
-- [ ] Projeto Supabase criado e ligado pelo proprietário.
-- [ ] SQL executado no projeto.
+- [x] Projeto Supabase `site-familia` criado na região `eu-central-1` (Frankfurt). ID: `rhpmebmytzmfwitjrfau`. Custo confirmado para criação: 0 USD/mês.
+- [x] Esquema SQL aplicado no projeto, RLS ativo, importação dos quatro temas verificada, avisos de segurança consultados (sem resultados).
 - [ ] Quatro contas de utilizador e respetivos UUID autorizados.
 - [ ] Cliente web integrado no Supabase, testado e ativado.
 
