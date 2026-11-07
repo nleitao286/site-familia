@@ -23,7 +23,13 @@ $("login-form").addEventListener("submit",async event=>{
    if(error)throw error;
    message("Se o e-mail for aceite, receberás uma ligação de acesso. Abre-a no mesmo navegador. Verifica também a pasta de spam.","success");
    $("otp-area").hidden=false;
- }catch(e){message("Não foi possível enviar a ligação: "+(e.message||e),"error")}
+ }catch(e){
+   if(e?.status===429 || /rate limit|too many requests/i.test(e?.message||"")){
+     message("O Supabase atingiu o limite de e-mails de autenticação do projeto (2 por hora no serviço de e-mail de teste). Não insistas no envio: espera pelo restabelecimento do limite ou configura SMTP próprio no Supabase. A base de dados não foi afetada.","error");
+   }else{
+     message("Não foi possível enviar a ligação: "+(e.message||e),"error");
+   }
+ }
  finally{busy(false)}
 });
 $("otp-form").addEventListener("submit",async event=>{
