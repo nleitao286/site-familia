@@ -95,6 +95,10 @@ const G={
   this.backup(topic,JSON.stringify(data),"Alteração local");
   this.dirty[topic]=true;this.saveDirty();this.render();
   if(this.token&&this.loaded[topic])this.schedule(topic);
+  else {
+   const popup=document.getElementById("toast");
+   if(popup){popup.textContent="⚠ Só neste navegador — NÃO GRAVADO NO GITHUB";popup.classList.remove("hidden");clearTimeout(this.localWarningTimer);this.localWarningTimer=setTimeout(()=>popup.classList.add("hidden"),6500)}
+  }
  },
  schedule(topic){clearTimeout(this.timers[topic]);this.timers[topic]=setTimeout(()=>{this.flush(topic).catch(e=>console.warn(e))},750)},
  async flush(topic){
