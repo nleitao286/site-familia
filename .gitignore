@@ -1,0 +1,19 @@
+# SITE-FAMILIA — ficheiros privados e locais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+.DS_Store
+node_modules/
+dist/
+coverage/
+*.log
+# Os ficheiros dados/*.json existentes são históricos e públicos.
+# Não adicionar novas exportações pessoais ou backups ao git.
+*recuperacao*.json
+*backup*.json
