@@ -22,7 +22,7 @@ alter table public.familia_dados enable row level security;
 revoke all on public.familia_membros from anon, authenticated;
 revoke all on public.familia_dados from anon, authenticated;
 grant select on public.familia_membros to authenticated;
-grant select,update on public.familia_dados to authenticated;
+grant select on public.familia_dados to authenticated;
 drop policy if exists "Familia consulta membros" on public.familia_membros;
 create policy "Familia consulta membros" on public.familia_membros
   for select to authenticated
@@ -37,13 +37,14 @@ create policy "Familia atualiza dados" on public.familia_dados
   using (exists (select 1 from public.familia_membros m where m.user_id=(select auth.uid())))
   with check (exists (select 1 from public.familia_membros m where m.user_id=(select auth.uid())));
 -- Não há INSERT/DELETE de dados no cliente. Apenas UPDATE depois de autenticação.
--- O RPC faz escrita com verificação da versão para evitar sobrescritas silenciosas.
+-- A escrita só ocorre pelo RPC, que valida membro e versão, para evitar sobrescritas silenciosas.
+-- O RPC corre como proprietário da função: não conceder UPDATE direto a clientes.
 create or replace function public.guardar_familia_dados(
   p_tema text,
   p_conteudo jsonb,
   p_versao bigint
 ) returns table (nova_versao bigint)
-language plpgsql security invoker set search_path = ''
+language plpgsql security definer set search_path = ''
 as $$
 begin
   return query
