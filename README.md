@@ -19,6 +19,10 @@ O projeto já está organizado para abrir no Codex e contém instruções e tare
 
 O repositório é **público**; não colocar dados privados ou segredos no código. O acesso ao Supabase deve depender de Auth + RLS.
 
+## Acessos por palavra-passe (em preparação)
+
+Foi aprovado o uso de contas individuais e gestão dos acessos pelo Nuno. O [procedimento de configuração e publicação](docs/ACESSOS-PASSWORD.md) descreve o novo cliente e a função administrativa. Ainda requer configurar o backend e integrar o PR; os e-mails autorizados e palavras-passe não são publicados neste repositório.
+
 ## Módulos
 
 | Página | Dados |

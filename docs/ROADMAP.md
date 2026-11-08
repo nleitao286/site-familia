@@ -4,6 +4,8 @@
 
 ## P0 — Autenticação e segurança (bloqueadores)
 
+Decisão de 8/11/2026: entrada por e-mail/palavra-passe, com Nuno como único administrador dos quatro acessos. [Implementação e configuração privada](ACESSOS-PASSWORD.md) preparadas em PR; publicação e testes reais da nova UI ainda pendentes.
+
 Tarefa #1: [diagnóstico, alterações do cliente e validação pendente](AUTH-LOGIN.md). Em 7/11/2026, o teste HTTP de retorno já aponta para GitHub Pages; manter os itens abertos até confirmar Dashboard e login real no iPhone.
 
 - [ ] **Corrigir redirects de autenticação.** No Supabase Auth URL Configuration configurar Site URL `https://nleitao286.github.io/site-familia/` e Redirect URL exata `https://nleitao286.github.io/site-familia/entrar.html`. Diagnosticar e verificar que não abre `localhost:3000`. Estas definições são no Dashboard; alterar o HTML sozinho não resolve.

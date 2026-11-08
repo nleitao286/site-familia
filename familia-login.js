@@ -1,9 +1,12 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/+esm";
+import {createAdminPanel} from "./familia-admin.js";
 const URL="https://rhpmebmytzmfwitjrfau.supabase.co",KEY="sb_publishable_4c94DsunCCoQjMyuHoxzWg_jK_7qQtm";
 // Endereço exato autorizado no Dashboard: nunca derivar de previews/localhost.
 const LOGIN_REDIRECT_URL="https://nleitao286.github.io/site-familia/entrar.html";
 const supabase=createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
+const adminPanel=createAdminPanel(supabase);
+let passwordBusy=false;
 const COOLDOWN_KEY="familia-auth-next-send";
 let pendingEmail="",sending=false,verifying=false,sessionVersion=0,nextSendAt=0;
 try{nextSendAt=Number(sessionStorage.getItem(COOLDOWN_KEY))||0}catch{}
@@ -12,7 +15,7 @@ function updateSendButton(){
  const seconds=Math.max(0,Math.ceil((nextSendAt-Date.now())/1000));
  $("login-send").disabled=sending||seconds>0;
  $("login-send").textContent=sending?"A ENVIAR…":seconds>0?`AGUARDA ${seconds} S`:"ENVIAR LIGAÇÃO";
- $("login-email").disabled=sending;
+ $("link-email").disabled=sending;
 }
 function cooldown(){
  nextSendAt=Date.now()+60000;
@@ -21,6 +24,7 @@ function cooldown(){
 }
 async function renderSession(){
  const version=++sessionVersion;
+ adminPanel.hide();
  if($("login-message").dataset.kind==="success")$("login-message").hidden=true;
  $("session-area").hidden=true;$("session-controls").hidden=true;
  $("login-area").hidden=false;
@@ -40,18 +44,31 @@ async function renderSession(){
    $("session-person").textContent="Bem-vindo, "+member.nome+". A tua conta foi reconhecida.";
    $("session-area").hidden=false;
    message("Acesso familiar autenticado com sucesso.","success");
+   await adminPanel.load();
  }catch{
    if(version===sessionVersion)message("Não foi possível confirmar a sessão. Verifica a ligação e tenta novamente.","error");
  }
 }
 $("login-form").addEventListener("submit",async event=>{
+ event.preventDefault();if(passwordBusy)return;
+ const email=$("login-email").value.trim().toLowerCase(),password=$("login-password").value;
+ if(!email||!password)return;
+ passwordBusy=true;$("password-login").disabled=true;
+ try{
+   const {error}=await supabase.auth.signInWithPassword({email,password});
+   if(error){message(error.status===429?"Demasiadas tentativas. Aguarda antes de tentar novamente.":"Não foi possível entrar. Verifica o e-mail e a palavra-passe ou pede ajuda ao Nuno.","error");return}
+   $("otp-area").hidden=true;await renderSession();
+ }catch{message("Não foi possível entrar. Verifica a ligação à Internet e tenta novamente.","error")}
+ finally{passwordBusy=false;$("password-login").disabled=false;$("login-password").value=""}
+});
+$("link-form").addEventListener("submit",async event=>{
  event.preventDefault();
  if(sending||Date.now()<nextSendAt)return;
- const email=$("login-email").value.trim().toLowerCase();
+ const email=$("link-email").value.trim().toLowerCase();
  if(!email)return;
  sending=true;updateSendButton();
  try{
-   const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:LOGIN_REDIRECT_URL}});
+   const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:LOGIN_REDIRECT_URL,shouldCreateUser:false}});
    if(error)throw error;
    pendingEmail=email;cooldown();
    message("Se o e-mail for aceite, receberás uma ligação de acesso. Abre-a no mesmo navegador. Verifica também a pasta de spam. Aguarda antes de pedir outra ligação.","success");
@@ -85,7 +102,7 @@ $("logout").addEventListener("click",async()=>{
  try{
    const {error}=await supabase.auth.signOut({scope:"local"});
    if(error)throw error;
-   ++sessionVersion;pendingEmail="";$("otp-code").value="";
+   ++sessionVersion;adminPanel.hide();$("login-password").value="";pendingEmail="";$("otp-code").value="";
    $("session-area").hidden=true;$("session-controls").hidden=true;$("otp-area").hidden=true;$("login-area").hidden=false;
    message("Sessão terminada neste navegador.","success");
  }catch{message("Não foi possível terminar a sessão. Verifica a ligação e tenta novamente.","error")}

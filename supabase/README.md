@@ -2,6 +2,10 @@
 
 O site continua a funcionar no GitHub Pages com o sistema atual até a ligação Supabase estar ativa. O projeto e os quatro documentos já existem no Supabase, mas o cliente web ainda não foi transferido. **Os ficheiros nesta pasta não criam um projeto Supabase por si só.**
 
+## Contas e palavras-passe
+
+A família escolheu contas individuais e gestão pelo Nuno. Consultar [configuração, segurança e publicação](../docs/ACESSOS-PASSWORD.md). As alterações estão em PR; não assumir que a função e a migração já foram aplicadas.
+
 ## Autenticação e redirecionamentos
 
 Para a tarefa #1, consultar [o diagnóstico e os passos de validação](../docs/AUTH-LOGIN.md). O retorno HTTP atual aponta para GitHub Pages, mas login real e confirmação no Dashboard continuam pendentes. Não voltar a executar esquema/importação para corrigir Auth.

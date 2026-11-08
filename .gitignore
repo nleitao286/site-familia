@@ -17,3 +17,6 @@ coverage/
 # Não adicionar novas exportações pessoais ou backups ao git.
 *recuperacao*.json
 *backup*.json
+
+# Metadados locais da CLI Supabase
+supabase/.temp/
