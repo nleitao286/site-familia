@@ -30,6 +30,10 @@ publicados ou cópias existentes. Limpar o histórico ou mudar a visibilidade/
 alojamento é uma tarefa separada. Não colocar novos dados familiares privados,
 backups, credenciais ou tokens no GitHub.
 
+## Continuar noutro computador
+
+Todo o código está na branch `main`. Seguir as [instruções para clonar, testar e propor alterações](docs/CODEX.md). Dados e configurações privadas permanecem no Supabase e fora do repositório.
+
 ## Desenvolvimento
 
 Ler [AGENTS.md](AGENTS.md), [arquitetura](docs/ARCHITECTURE.md) e
