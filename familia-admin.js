@@ -19,15 +19,30 @@ export function createAdminPanel(supabase) {
   }
   function selection() {
     const person = people.find(person => person.nome === $('admin-person').value);
-    const action = $('admin-action').value;
-    $('admin-password-fields').hidden = !['create', 'password'].includes(action);
-    $('admin-password').required = !clientDisabled() && ['create', 'password'].includes(action);
+    const actions = $('admin-action');
+    for(const option of actions.options){
+      option.disabled = !person || (option.value==='create' ? person.exists : !person.exists) || (option.value==='suspend' && person.admin);
+    }
+    if(person && [...actions.options].find(option=>option.value===actions.value)?.disabled)actions.value=person.exists?'password':'create';
+    const action = actions.value, needsPassword = ['create','password'].includes(action);
+    $('admin-password-fields').hidden = !needsPassword;
+    $('admin-password').required = !clientDisabled() && needsPassword;
     $('admin-password-confirm').required = $('admin-password').required;
     $('admin-state').textContent = person ? `${person.nome}: ${person.exists ? person.active ? 'acesso ativo' : 'acesso por ativar ou suspenso' : 'conta por criar'}.` : '';
-    if (person?.admin && action === 'suspend') $('admin-state').textContent += ' O administrador não pode suspender o próprio acesso.';
-    if (person && !person.exists && action !== 'create') $('admin-state').textContent += ' Seleciona «Criar conta e definir palavra-passe».';
-    if (person?.exists && action === 'create') $('admin-state').textContent += ' A conta já existe; seleciona «Definir palavra-passe».';
-    $('admin-save').disabled = busy || !person || (action === 'create' && person.exists) || (action !== 'create' && !person.exists) || (action === 'suspend' && person.admin);
+    const password=$('admin-password').value, confirmation=$('admin-password-confirm').value;
+    let hint='';
+    if(needsPassword){
+      if(!password)hint='Escreve a nova palavra-passe e repete-a no segundo campo.';
+      else if(password.length<12)hint='A palavra-passe precisa de pelo menos 12 caracteres.';
+      else if(new TextEncoder().encode(password).length>72)hint='A palavra-passe é demasiado longa. Usa até 72 bytes.';
+      else if(!confirmation)hint='Repete a palavra-passe no segundo campo.';
+      else if(password!==confirmation)hint='As duas palavras-passe ainda não são iguais.';
+      else hint='As palavras-passe coincidem. Já podes guardar.';
+    }
+    $('admin-password-hint').textContent=hint;
+    const validPassword=!needsPassword || (password.length>=12 && new TextEncoder().encode(password).length<=72 && password===confirmation);
+    $('admin-save').textContent=busy?'A GUARDAR…':action==='create'?'CRIAR CONTA E GUARDAR':action==='password'?'GUARDAR PALAVRA-PASSE':action==='suspend'?'SUSPENDER ACESSO':'REATIVAR ACESSO';
+    $('admin-save').disabled=busy || !person || !validPassword || [...actions.options].find(option=>option.value===action)?.disabled;
   }
   function clientDisabled() { return $('admin-area').hidden; }
   function clearPasswords() { $('admin-password').value = ''; $('admin-password-confirm').value = ''; }
@@ -51,8 +66,9 @@ export function createAdminPanel(supabase) {
       $('admin-area').hidden = false; selection();
     } catch { if (current === version) hide(); }
   }
-  $('admin-person').addEventListener('change', () => { clearPasswords(); $('admin-message').hidden = true; selection(); });
+  $('admin-person').addEventListener('change', () => { clearPasswords(); $('admin-action').value=people.find(person=>person.nome===$('admin-person').value)?.exists?'password':'create'; $('admin-message').hidden = true; selection(); });
   $('admin-action').addEventListener('change', () => { clearPasswords(); $('admin-message').hidden = true; selection(); });
+  for(const id of ['admin-password','admin-password-confirm'])for(const event of ['input','change'])$(id).addEventListener(event,selection);
   $('admin-refresh').addEventListener('click', async () => { if (busy) return; hide(); await load(); });
   $('admin-form').addEventListener('submit', async event => {
     event.preventDefault(); if (busy || clientDisabled() || $('admin-save').disabled) return;
