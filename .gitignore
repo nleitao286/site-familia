@@ -20,3 +20,7 @@ coverage/
 
 # Metadados locais da CLI Supabase
 supabase/.temp/
+
+# Dados familiares não devem voltar ao repositório público
+dados/*.json
+supabase/02-importar-dados.sql

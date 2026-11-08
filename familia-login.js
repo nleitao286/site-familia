@@ -1,5 +1,5 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/+esm";
-import {createAdminPanel} from "./familia-admin.js";
+import {createAdminPanel} from "./familia-admin.js?v=20261108-private1";
 const URL="https://rhpmebmytzmfwitjrfau.supabase.co",KEY="sb_publishable_4c94DsunCCoQjMyuHoxzWg_jK_7qQtm";
 // Endereço exato autorizado no Dashboard: nunca derivar de previews/localhost.
 const LOGIN_REDIRECT_URL="https://nleitao286.github.io/site-familia/entrar.html";
@@ -44,6 +44,8 @@ async function renderSession(){
    $("session-person").textContent="Bem-vindo, "+member.nome+". A tua conta foi reconhecida.";
    $("session-area").hidden=false;
    message("Acesso familiar autenticado com sucesso.","success");
+   const next=new globalThis.URL(location.href).searchParams.get("next");
+   if(["index.html","menu.html","viaturas.html","compras.html","compromissos.html","recuperar.html"].includes(next)){location.replace(next);return}
    await adminPanel.load();
  }catch{
    if(version===sessionVersion)message("Não foi possível confirmar a sessão. Verifica a ligação e tenta novamente.","error");

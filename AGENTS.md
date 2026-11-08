@@ -6,15 +6,23 @@ Lê primeiro este ficheiro, `README.md`, `docs/ARCHITECTURE.md` e `docs/ROADMAP.
 
 Site familiar, em português europeu, para Filipa, Nuno, Martim e Madalena. Permite planear refeições (almoço/jantar), gerir viaturas, lista de compras e compromissos. O objetivo principal atual é migrar de JSON público/GitHub para **Supabase autenticado e partilhado entre navegadores**.
 
-## Estado real (não assumir migração concluída)
+## Estado real
 
-- Site estático alojado com GitHub Pages, originado da branch `main`, na raiz.
-- `index.html`, `menu.html`, `viaturas.html`, `compras.html`, `compromissos.html` usam `app.js` e `sync.js` (GitHub JSON + `localStorage`). **Não usam ainda Supabase para os dados.**
-- `entrar.html` + `familia-login.js` têm um primeiro formulário Supabase Auth (magic link/OTP); **não protegem as outras páginas**.
-- Projeto Supabase existente: `rhpmebmytzmfwitjrfau` (região `eu-central-1`). Dados já importados em `public.familia_dados`; autenticador familiar em `public.familia_membros` e `private.familia_convites`.
-- A primeira conta familiar foi pré-autorizada mas **não foi confirmado login bem-sucedido**.
-- Falha observada: e-mail de login redirecionou para `localhost:3000` (configuração Auth Site URL / redirect URLs); também foi observado `email rate limit exceeded`.
-- Repositório **público**, incluindo `dados/*.json` e histórico anterior. Não inserir dados privados nem credenciais nele.
+- Site estático em GitHub Pages, branch `main`, raiz.
+- `family-page.js` confirma sessão e associação familiar antes de carregar as
+  seis páginas de dados/recuperação. `family-store.js` lê Supabase e conserva
+  rascunhos por utilizador/página; `app.js` já não usa GitHub como persistência.
+- `familia-login.js` usa palavra-passe ou ligação; a gestão das quatro contas
+  pelo Nuno usa a Edge Function `familia-acessos`.
+- Projeto existente: `rhpmebmytzmfwitjrfau`, região `eu-central-1`.
+- Os quatro documentos foram preservados e comparados com os JSON antigos.
+- JSON e SQL de importação retirados da versão atual após cópia privada.
+  O repositório e o seu histórico continuam públicos; não afirmar privacidade
+  total de informação que já foi publicada.
+- A escrita de `authenticated` deve passar apenas pelo RPC versionado, com
+  políticas RLS e função privada de role dedicada sem login/BYPASSRLS.
+- Login e painel foram confirmados pelo Nuno. A nova migração de persistência
+  tem testes automáticos; validar também com as contas reais em iPhone.
 
 ## Segurança prioritária
 
@@ -24,7 +32,7 @@ Site familiar, em português europeu, para Filipa, Nuno, Martim e Madalena. Perm
 4. Preservar o histórico e os dados locais de utilizadores que fizeram alterações ainda não publicadas. **Não sobrescrever `localStorage` com dados remotos sem aviso, cópia e opção de conciliação.**
 5. Não apagar ficheiros JSON públicos ou migrar dados privados sem estratégia explícita: o histórico de git já publicou dados passados. Recomendar a privacidade e tratar eventual remoção do histórico separadamente.
 6. Todas as tabelas expostas pela Data API devem ter RLS ativado; testar operações para membro autenticado e utilizador não autorizado.
-7. Evitar perda de atualizações simultâneas: `familia_dados.versao` e RPC `guardar_familia_dados` suportam controlo otimista. Atualmente a tabela também concede UPDATE a membros: avaliar revogar UPDATE direto para obrigar o uso de RPC, preservando RLS com função segura.
+7. Evitar perda de atualizações simultâneas: `familia_dados.versao` e RPC `guardar_familia_dados` suportam controlo otimista. Manter UPDATE direto revogado a membros. O RPC usa uma função privada com role dedicada e RLS; nunca contornar o controlo de versão.
 8. Usar documentação Supabase atual antes de introduzir alterações em Auth ou base de dados.
 
 ## Desenvolvimento
@@ -41,7 +49,7 @@ Site familiar, em português europeu, para Filipa, Nuno, Martim e Madalena. Perm
 
 1. Ler `docs/ROADMAP.md`, começar pelo primeiro item **P0**.
 2. Rever `familia-login.js` e configuração das Redirect URLs no Dashboard Supabase.
-3. Planear e implementar um adaptador de persistência Supabase para `app.js`, substituindo gradualmente `sync.js`.
+3. Rever `family-page.js`, `family-store.js` e `docs/MIGRACAO-DADOS.md`; não restaurar a persistência GitHub ou dados públicos como fallback.
 4. Confirmar todos os comportamentos de segurança e de recuperação antes de desativar a persistência antiga.
 
 Referências: `docs/CODEX.md`, `docs/ARCHITECTURE.md`, `supabase/README.md`.

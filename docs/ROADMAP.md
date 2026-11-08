@@ -11,19 +11,21 @@ Tarefa #1: [diagnóstico, alterações do cliente e validação pendente](AUTH-L
 - [ ] **Corrigir redirects de autenticação.** No Supabase Auth URL Configuration configurar Site URL `https://nleitao286.github.io/site-familia/` e Redirect URL exata `https://nleitao286.github.io/site-familia/entrar.html`. Diagnosticar e verificar que não abre `localhost:3000`. Estas definições são no Dashboard; alterar o HTML sozinho não resolve.
 - [ ] **Resolver limite de e-mails.** Investigar `email rate limit exceeded`; evitar reenvios repetidos; considerar SMTP próprio ou alternativa de login por palavra-passe aprovada, sem desativar proteções precipitadamente.
 - [ ] **Verificar acesso do primeiro membro.** Confirmar e-mail, trigger de associação, leitura RLS, logout e rejeição de utilizadores fora da família.
-- [ ] **Proteger acesso às páginas de dados.** Redirecionar para `entrar.html` quando não autenticado; impedir exibição de dados protegidos. **Não** afirmar que o site é privado enquanto os JSON públicos estiverem acessíveis.
-- [ ] **Rever segurança da escrita.** Testar RLS e RPC com dois membros. Garantir que UPDATE direto não contorna `versao` (eventualmente revogar UPDATE e usar RPC autorizado).
+- [x] **Proteger acesso às páginas de dados.** Redirecionar para `entrar.html` quando não autenticado; impedir exibição de dados protegidos. **Não** afirmar que o site é privado enquanto os JSON públicos estiverem acessíveis.
+- [x] **Rever segurança da escrita.** Testar RLS e RPC com dois membros. Garantir que UPDATE direto não contorna `versao` (eventualmente revogar UPDATE e usar RPC autorizado).
 - [ ] **Plano de privacidade do GitHub público.** Não adicionar dados sensíveis; tratar remoção de JSON/histórico de forma deliberada, com cópias e sem perder dados.
 
 ## P1 — Migração de persistência
 
-- [ ] Criar um adaptador `supabase-sync.js` ou abstração de repositório para leitura/escrita dos 4 temas por utilizador autenticado.
-- [ ] No `app.js`, substituir `sync.js` gradualmente, preservando menu, compras, compromissos e viaturas.
-- [ ] Mostrar estados claros: a guardar, guardado no Supabase, sem rede, conflito, alteração local por publicar.
-- [ ] Implementar verificação de versão `versao` nas alterações e resolução de conflitos sem perda de dados.
-- [ ] Preservar/restaurar alterações locais antigas; garantir backup antes de substituir.
+Implementação e estratégia de retirada de dados públicos: [MIGRACAO-DADOS.md](MIGRACAO-DADOS.md). Atualização entre navegadores é manual; testes reais nas contas familiares continuam pendentes. O histórico público não foi reescrito.
+
+- [x] Criar um adaptador `supabase-sync.js` ou abstração de repositório para leitura/escrita dos 4 temas por utilizador autenticado.
+- [x] No `app.js`, substituir `sync.js` gradualmente, preservando menu, compras, compromissos e viaturas.
+- [x] Mostrar estados claros: a guardar, guardado no Supabase, sem rede, conflito, alteração local por publicar.
+- [x] Implementar verificação de versão `versao` nas alterações e resolução de conflitos sem perda de dados.
+- [x] Preservar/restaurar alterações locais antigas; garantir backup antes de substituir.
 - [ ] Validar várias sessões (iPhone Chrome, Safari, computador) e atualização dos outros clientes. Definir atualização manual e/ou realtime.
-- [ ] Desativar a necessidade de token GitHub na experiência final do utilizador.
+- [x] Desativar a necessidade de token GitHub na experiência final do utilizador.
 
 ## P2 — Qualidade e manutenção
 

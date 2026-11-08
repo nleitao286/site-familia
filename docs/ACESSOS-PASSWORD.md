@@ -110,8 +110,8 @@ A ausência do painel não é confirmação de configuração concluída.
   não pode suspender-se pelo painel. Se uma operação falhar parcialmente, a
   interface indica que é necessário conciliar; nunca anuncia sucesso completo.
 - Não existem escritas nos quatro documentos, JSON, `app.js`, `sync.js` ou
-  mecanismos de recuperação neste trabalho. A autorização do Supabase não
-  protege os JSON públicos nem conclui a migração da persistência antiga.
+  mecanismos de recuperação neste trabalho. A migração de persistência é descrita em [MIGRACAO-DADOS.md](MIGRACAO-DADOS.md);
+  a autorização do Supabase não retira dados do histórico público anterior.
 - Pessoas suspensas podem continuar a ver dados antigos que já guardaram ou
   que permanecem públicos no GitHub. A privacidade global exige as tarefas
   restantes do roadmap.

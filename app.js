@@ -5,8 +5,8 @@ const PEOPLE=["Filipa","Nuno","Martim","Madalena"];
 const DAYS=["sábado","domingo","segunda","terça","quarta","quinta","sexta"];
 const $=id=>document.getElementById(id);
 const safe=x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-const get=(key,fallback)=>{try{const value=localStorage.getItem(key);return value?JSON.parse(value):fallback}catch(e){return fallback}};
-function set(key,data){try{localStorage.setItem(key,JSON.stringify(data));window.GHSync?.changed(key,data);return true}catch(e){toast("Não foi possível guardar neste navegador.");return false}}
+const get=(key,fallback)=>window.FamilySync.get(key,fallback);
+function set(key,data){const ok=window.FamilySync.changed(key,data);if(!ok)toast("Não foi possível conservar a alteração. Descarrega uma cópia e verifica o estado acima.");return ok}
 const uid=()=>typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
 function toast(message){const el=$("toast");if(!el)return;el.textContent=message;el.classList.remove("hidden");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.add("hidden"),2900)}
 function isoDate(d){const pad=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
@@ -15,30 +15,12 @@ function pretty(s){const d=parseDate(s);return d?d.toLocaleDateString("pt-PT",{d
 function relative(s){const d=parseDate(s);if(!d)return {cls:"dim",label:"Por agendar",days:null};const t=new Date();t.setHours(0,0,0,0);const n=Math.round((d-t)/86400000);return n<0?{cls:"late",label:"Atrasado "+Math.abs(n)+" d",days:n}:n===0?{cls:"warning",label:"Hoje",days:0}:n<=30?{cls:"warning",label:"Em "+n+" d",days:n}:{cls:"",label:pretty(s),days:n}}
 function pill(s){const p=relative(s);return '<span class="pill '+p.cls+'">'+safe(p.label)+'</span>'}
 function addPeriod(s,freq){const date=parseDate(s);if(!date)return "";const d=new Date(date);if(freq==="weekly"){d.setDate(d.getDate()+7);return isoDate(d)}const months={monthly:1,quarterly:3,yearly:12}[freq];if(!months)return "";const originalDay=d.getDate();const dest=new Date(d.getFullYear(),d.getMonth()+months,1);const last=new Date(dest.getFullYear(),dest.getMonth()+1,0).getDate();dest.setDate(Math.min(originalDay,last));return isoDate(dest)}
-function tasksSeed(){return [
-{id:"initial-condo",name:"Pagar condomínio",type:"task",freq:"monthly",due:"",person:"",notes:"",history:[],completed:false},
-{id:"initial-water",name:"Contagem de água",type:"meter",freq:"monthly",due:"",person:"",notes:"",history:[],completed:false},
-{id:"initial-electricity",name:"Contagem de luz",type:"meter",freq:"monthly",due:"",person:"",notes:"",history:[],completed:false},
-{id:"initial-gas",name:"Contagem de gás",type:"meter",freq:"monthly",due:"",person:"",notes:"",history:[],completed:false}
-]}
-function loadTasks(){const tasks=get(KEYS.tasks,null);if(Array.isArray(tasks))return tasks;const seeded=tasksSeed();set(KEYS.tasks,seeded);return seeded}
+function loadTasks(){return get(KEYS.tasks,[])}
 function loadVehicles(){const v=get(KEYS.vehicles,[]);return Array.isArray(v)?v:[]}
 function loadShopping(){const v=get(KEYS.shopping,[]);return Array.isArray(v)?v:[]}
 function saturday(input){const d=parseDate(input)||new Date();d.setDate(d.getDate()-(d.getDay()+1)%7);return isoDate(d)}
 function defaultMeals(){return {weeks:{},dishes:{A:[],J:[]}}}
-function loadMeals(){
- let data=get(KEYS.menu,null);
- if(data&&data.weeks&&data.dishes)return data;
- data=defaultMeals();
- const old=get("menu-semana",null);
- if(old&&old.sel&&typeof old.sel==="object"){
-  const w=saturday(old.inicio||isoDate(new Date()));const meals={};
-  for(let i=0;i<7;i++){meals[i]={A:{dish:String(old.sel[i+"A"]||""),salad:!!old.sel[i+"AS"]},J:{dish:String(old.sel[i+"J"]||""),salad:!!old.sel[i+"JS"]}}}
-  data.weeks[w]=meals;
-  for(const k of ["A","J"]){const ideas=Array.isArray(old.ideas?.[k])?old.ideas[k]:[];data.dishes[k]=[...new Set(ideas.filter(x=>typeof x==="string"&&x.trim()))]}
- }
- set(KEYS.menu,data);return data;
-}
+function loadMeals(){return get(KEYS.menu,defaultMeals())}
 function value(id){return $(id)?.value?.trim()||""}
 function scrollForm(id){$(id)?.scrollIntoView({behavior:"smooth",block:"start"})}
 function fieldMeta(label,value){return value?'<span><b>'+safe(label)+':</b> '+safe(value)+'</span>':""}
@@ -59,12 +41,17 @@ function initHome(){
  $("import-all").onchange=async e=>{
   const f=e.target.files?.[0];if(!f)return;
   if(f.size>2000000){toast("Ficheiro demasiado grande (máximo 2 MB).");e.target.value="";return}
-  try{const pack=JSON.parse(await f.text());const d=pack?.data;
+  try{const pack=JSON.parse(await f.text());
+   if(pack.format==="familia-supabase-recovery"){
+    if(!confirm("Conservar os rascunhos e importar esta cópia para comparar? Nada será publicado automaticamente."))return;
+    const count=window.FamilySync.importPack(pack);toast(count+" temas recuperados para comparar.");initHome();return;
+   }
+   const d=pack?.data;
    if(pack.format!=="familia-backup"||pack.version!==1||!d||!d.menu?.weeks||!d.menu?.dishes||!Array.isArray(d.vehicles)||!Array.isArray(d.shopping)||!Array.isArray(d.tasks))throw Error("Formato inválido");
-   if(!confirm("Substituir os dados do menu, viaturas, compras e compromissos neste dispositivo?"))return;
-   set(KEYS.menu,d.menu);set(KEYS.vehicles,d.vehicles);set(KEYS.shopping,d.shopping);set(KEYS.tasks,d.tasks);
-   toast("Dados importados.");initHome();
-  }catch(err){toast("O ficheiro não é uma cópia de segurança válida.")}finally{e.target.value=""}
+   if(!confirm("Conservar cópias e preparar os quatro temas para comparar com o Supabase? Nada será publicado automaticamente."))return;
+   window.FamilySync.import({refeicoes:d.menu,viaturas:d.vehicles,compras:d.shopping,compromissos:d.tasks});
+   toast("Cópias importadas para comparar. Confirma o estado acima.");initHome();
+  }catch(err){toast("Não foi possível importar todas as cópias. Verifica o formato, o espaço local e o estado acima; o ficheiro original foi mantido.")}finally{e.target.value=""}
  };
 }
 function initMenu(){
@@ -105,7 +92,7 @@ function initVehicles(){
  }
  form.onsubmit=e=>{e.preventDefault();const obj={id:id.value||uid()};for(const [key,dom] of Object.entries(VEH_FIELDS))obj[key]=value(dom);
   if(!obj.name)return;const pos=vehicles.findIndex(v=>v.id===obj.id);if(pos<0)vehicles.unshift(obj);else vehicles[pos]=obj;
-  if(set(KEYS.vehicles,vehicles)){clear();render();toast("Viatura guardada.")}};
+  if(set(KEYS.vehicles,vehicles)){clear();render();toast("Alteração preparada. Confirma a gravação no painel acima.")}};
  $("vehicle-cancel").onclick=()=>{clear();scrollForm("vehicle-form")};
  $("vehicle-list").onclick=e=>{const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]");if(edit){const v=vehicles.find(x=>x.id===edit.dataset.edit);if(!v)return;id.value=v.id;for(const [key,dom] of Object.entries(VEH_FIELDS))$(dom).value=v[key]||"";$("vehicle-form-title").textContent="Editar viatura";$("vehicle-save").textContent="Guardar alterações";$("vehicle-cancel").classList.remove("hidden");scrollForm("vehicle-form");return}
  if(del){const v=vehicles.find(x=>x.id===del.dataset.delete);if(!v||!confirm('Eliminar a viatura "'+v.name+'"?'))return;vehicles=vehicles.filter(x=>x.id!==v.id);set(KEYS.vehicles,vehicles);if(id.value===v.id)clear();render();toast("Viatura eliminada.")}};
@@ -148,7 +135,7 @@ function initTasks(){
  form.onsubmit=e=>{e.preventDefault();const obj={id:id.value||uid()};for(const [key,dom] of Object.entries(TASK_FIELDS))obj[key]=value(dom);if(!obj.name)return;
   const pos=tasks.findIndex(t=>t.id===obj.id);obj.history=pos>=0?(tasks[pos].history||[]):[];obj.completed=pos>=0?!!tasks[pos].completed:false;if(obj.freq!=="once")obj.completed=false;
   if(pos<0)tasks.unshift(obj);else tasks[pos]=obj;
-  if(set(KEYS.tasks,tasks)){clear();render();toast("Compromisso guardado.")}};
+  if(set(KEYS.tasks,tasks)){clear();render();toast("Alteração preparada. Confirma a gravação no painel acima.")}};
  $("task-cancel").onclick=()=>{clear();scrollForm("task-form")};
  $("task-list").onclick=e=>{
   const ed=e.target.closest("[data-task-edit]"),rm=e.target.closest("[data-task-remove]"),done=e.target.closest("[data-task-done]");
@@ -158,15 +145,13 @@ function initTasks(){
     if(t.type==="meter"){const entered=prompt('Introduz a leitura do contador para "'+t.name+'" (valor e unidade, se aplicável):');if(entered===null)return;reading=entered.trim();if(!reading){toast("É necessário indicar a leitura.");return}if(reading.length>120){toast("Leitura demasiado longa.");return}}
     t.history??=[];t.history.push({at:new Date().toISOString(),reading});
     if(t.freq==="once"){t.completed=true;t.due=""}else{let next=t.due||isoDate(new Date()),i=0;do{next=addPeriod(next,t.freq);i++}while(next&&next<=isoDate(new Date())&&i<240);t.due=next||""}
-    set(KEYS.tasks,tasks);render();toast("Registo guardado.");
+    set(KEYS.tasks,tasks);render();toast("Alteração preparada. Confirma a gravação no painel acima.");
   }
  };
  render();
 }
 const page=document.body.dataset.page;
-async function boot(){
- try{await window.GHSync?.load()}catch(err){console.warn("Falha ao carregar ficheiros JSON do GitHub:",err)}
- try{if(page==="index")initHome();else if(page==="menu")initMenu();else if(page==="viaturas")initVehicles();else if(page==="compras")initShopping();else if(page==="compromissos")initTasks()}catch(err){console.error(err);toast("Ocorreu um problema ao carregar esta área.")}
- window.GHSync?.render();
-}
-boot();
+function renderPage(){if(page==="index")initHome();else if(page==="menu")initMenu();else if(page==="viaturas")initVehicles();else if(page==="compras")initShopping();else if(page==="compromissos")initTasks()}
+if(!window.FamilySync?.authorised)throw Error("É necessário iniciar sessão antes de carregar a aplicação.");
+window.FamilyApp={render:renderPage};
+renderPage();
