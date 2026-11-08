@@ -2,6 +2,14 @@
 
 O site continua a funcionar no GitHub Pages com o sistema atual até a ligação Supabase estar ativa. O projeto e os quatro documentos já existem no Supabase, mas o cliente web ainda não foi transferido. **Os ficheiros nesta pasta não criam um projeto Supabase por si só.**
 
+## Contas e palavras-passe
+
+A família escolheu contas individuais e gestão pelo Nuno. Consultar [configuração, segurança e publicação](../docs/ACESSOS-PASSWORD.md). A função `familia-acessos` e a migração de suspensão foram publicadas em 8/11/2026. O frontend segue a integração deste PR em `main`; validar a nova UI com a sessão real do Nuno.
+
+## Autenticação e redirecionamentos
+
+Para a tarefa #1, consultar [o diagnóstico e os passos de validação](../docs/AUTH-LOGIN.md). O retorno HTTP atual aponta para GitHub Pages, mas login real e confirmação no Dashboard continuam pendentes. Não voltar a executar esquema/importação para corrigir Auth.
+
 ## Preparação no Supabase
 
 1. Entrar em https://supabase.com/dashboard e criar um projeto na região **EU Central (Frankfurt)**, se disponível para a organização e plano. Escolher o plano gratuito.
