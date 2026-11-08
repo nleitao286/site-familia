@@ -9,12 +9,13 @@ test('PostgreSQL: apenas RPC autorizado, versões concorrentes e dados preservad
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  create table auth.users(id uuid primary key);`);
  await db.exec(readFileSync(new URL('supabase/01-schema.sql',root),'utf8'));
- await db.exec(`create role deploy_user createrole;grant deploy_user to postgres;
-  alter schema private owner to deploy_user;alter schema public owner to deploy_user;alter schema auth owner to deploy_user;
+ await db.exec(`create role deploy_user createrole;grant deploy_user to postgres;grant authenticated to deploy_user with admin option;
+  alter schema private owner to deploy_user;alter schema public owner to deploy_user;create role managed_auth_owner;grant usage on schema auth to deploy_user;alter schema auth owner to managed_auth_owner;
   alter table public.familia_membros owner to deploy_user;alter table public.familia_dados owner to deploy_user;alter table auth.users owner to deploy_user;
-  alter function public.guardar_familia_dados(text,jsonb,bigint) owner to deploy_user;alter function auth.uid() owner to deploy_user;
+  alter function public.guardar_familia_dados(text,jsonb,bigint) owner to deploy_user;alter function auth.uid() owner to managed_auth_owner;
   set role deploy_user;`);
  await db.exec(readFileSync(new URL('supabase/migrations/20261108200642_escrita_familiar_versionada.sql',root),'utf8'));
+ await db.exec(readFileSync(new URL('supabase/migrations/20261108204420_acesso_auth_da_role_writer.sql',root),'utf8'));
  await db.exec('reset role');
  await db.query('insert into auth.users(id) values($1),($2),($3)',[a,b,outsider]);
  await db.query("insert into public.familia_membros(user_id,nome) values($1,'Nuno'),($2,'Filipa')",[a,b]);

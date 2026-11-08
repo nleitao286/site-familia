@@ -18,7 +18,9 @@ apenas os nomes das seis páginas conhecidas, sem redirecionamento externo.
 A migração `20261108200642_escrita_familiar_versionada.sql` retira UPDATE direto
 à role `authenticated`. A função pública é `SECURITY INVOKER` e chama uma
 função privada cujo proprietário é `familia_rpc_writer`: sem login, sem
-BYPASSRLS e com os privilégios mínimos de SELECT/UPDATE. As políticas RLS e a
+BYPASSRLS e com SELECT/UPDATE limitado aos documentos. Herda os privilégios
+Auth normais de `authenticated` pela migração `20261108204420_acesso_auth_da_role_writer.sql`;
+a direção inversa não é concedida e os clientes não ganham UPDATE direto. As políticas RLS e a
 própria função verificam `auth.uid()` e a associação familiar. Não há concessão
 da role aos membros nem utilização de `user_metadata`.
 
@@ -86,7 +88,7 @@ dos dados históricos. Novas alterações deixam de ser publicadas no GitHub.
 ## Publicação e verificação
 
 1. Rever o PR e executar os testes abaixo.
-2. Aplicar apenas a nova migração no projeto existente. Não recriar/importar os
+2. Aplicar as duas migrações novas, por ordem, no projeto existente. Não recriar/importar os
    documentos. A migração não altera os conteúdos ou versões existentes.
 3. Verificar permissões: anónimo e utilizador fora da família não leem/escrevem;
    membro lê e grava pelo RPC; UPDATE direto é rejeitado.
