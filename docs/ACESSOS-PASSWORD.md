@@ -7,12 +7,16 @@ Só o Nuno administra os acessos das outras pessoas no site. O utilizador
 forneceu os quatro endereços em privado; não são incluídos no repositório.
 Cada conta mantém o seu UUID e os dados familiares existentes são preservados.
 
-Este PR prepara o cliente, a função de servidor e uma migração. **Não está
-publicado em produção:** não foram criadas contas ou alteradas palavras-passe,
-convites ou dados reais durante a preparação. O login por ligação já foi
-confirmado pelo utilizador no iPhone, incluindo logout e nova entrada após a
-reposição da quota. A palavra-passe e o painel novo precisam de teste real após
-configuração e publicação.
+Em 8/11/2026, a migração foi aplicada e a função `familia-acessos` foi
+publicada com verificação JWT obrigatória. A função reconhece a configuração
+privada e rejeitou os pedidos de teste sem sessão válida. A assinatura dos quatro
+documentos foi comparada antes/depois e manteve-se igual.
+
+O frontend acompanha esta alteração e é publicado pelo GitHub Pages após a
+integração em `main`. Não foram criadas contas nem alteradas palavras-passe nesta
+publicação. O login por ligação já tinha sido confirmado pelo utilizador no
+iPhone, incluindo logout e nova entrada após reposição da quota. O login por
+palavra-passe e o painel novo ainda requerem confirmação com a sessão real do Nuno.
 
 ## Utilização após publicação
 
@@ -39,9 +43,11 @@ aplicação. O Supabase permite que uma pessoa autenticada altere a própria
 palavra-passe através da API Auth; não se promete bloquear essa capacidade.
 Os proprietários do projeto Supabase continuam a ter os poderes da plataforma.
 
-## Configuração privada necessária para publicar
+## Configuração privada e procedimento de publicação
 
-As ferramentas disponíveis não permitem escrever os secrets da função.
+Os dois valores privados foram configurados pelo utilizador no Dashboard.
+As ferramentas disponíveis não permitem ler/escrever esses secrets; a aceitação
+da configuração foi verificada pelo comportamento da função, sem expor os valores.
 Foi preparado localmente `supabase/.env.local`, ignorado pelo git, com permissões
 0600, o UUID da conta confirmada do Nuno e os quatro endereços fornecidos.
 O ficheiro **não contém palavras-passe nem chaves administrativas**. Não o
@@ -146,7 +152,7 @@ Verificação da função com Deno 2.9.6:
 deno check --frozen --lock=supabase/functions/deno.lock supabase/functions/familia-acessos/index.ts
 ```
 
-Antes do lançamento: validar no projeto real login por palavra-passe do Nuno,
+Validação manual ainda pendente: confirmar no projeto real login por palavra-passe do Nuno,
 criação de uma conta familiar, rejeição do painel por outro membro, logout e
 suspensão/reativação com RLS, sem partilhar tokens ou palavras-passe. A integração
 real e os testes de iPhone da nova UI continuam pendentes.

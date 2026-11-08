@@ -2,7 +2,7 @@
 
 ## Atualização de 8 de novembro de 2026
 
-O utilizador confirmou no iPhone acesso familiar, logout e nova entrada após reposição da quota. A família optou entretanto por [e-mail e palavra-passe com administração do Nuno](ACESSOS-PASSWORD.md), para evitar envios em cada entrada. O diagnóstico abaixo permanece como histórico; a nova UI ainda não foi publicada.
+O utilizador confirmou no iPhone acesso familiar, logout e nova entrada após reposição da quota. A família optou entretanto por [e-mail e palavra-passe com administração do Nuno](ACESSOS-PASSWORD.md), para evitar envios em cada entrada. O diagnóstico abaixo permanece como histórico; a função e migração foram publicadas em 8/11/2026; o frontend segue a integração em `main`, e a validação real por palavra-passe continua pendente.
 
 ## Estado verificado em 7 de novembro de 2026
 

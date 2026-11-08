@@ -4,7 +4,7 @@ O site continua a funcionar no GitHub Pages com o sistema atual até a ligação
 
 ## Contas e palavras-passe
 
-A família escolheu contas individuais e gestão pelo Nuno. Consultar [configuração, segurança e publicação](../docs/ACESSOS-PASSWORD.md). As alterações estão em PR; não assumir que a função e a migração já foram aplicadas.
+A família escolheu contas individuais e gestão pelo Nuno. Consultar [configuração, segurança e publicação](../docs/ACESSOS-PASSWORD.md). A função `familia-acessos` e a migração de suspensão foram publicadas em 8/11/2026. O frontend segue a integração deste PR em `main`; validar a nova UI com a sessão real do Nuno.
 
 ## Autenticação e redirecionamentos
 
