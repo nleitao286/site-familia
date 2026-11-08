@@ -20,7 +20,7 @@ async function setup({href=redirect,user=null,member=null,userError=null,memberE
    onAuthStateChange:()=>{}
  };
  const client={auth,from(table){assert.equal(table,'familia_membros');return {select(columns){assert.equal(columns,'nome');return {eq(column,id){assert.equal(column,'user_id');assert.equal(id,user.id);return {maybeSingle:async()=>({data:member,error:memberError})}}}}}}};
- const context={createClient:()=>client,createAdminPanel:()=>({hide(){},async load(){}}),document:{getElementById:id=>elements.get(id)},location:{href},URL,URLSearchParams,
+ const context={createClient:()=>client,createAdminPanel:()=>({hide(){},async load(){}}),document:{getElementById:id=>elements.get(id)},location:{href,replace(url){this.replaced=url}},URL,URLSearchParams,
    Date:{now:()=>now},sessionStorage:{getItem:key=>storage.get(key),setItem:(key,value)=>storage.set(key,value)},
    localStorage:{getItem(){throw Error('Não ler dados locais')},setItem(){throw Error('Não alterar dados locais')},clear(){throw Error('Não apagar dados locais')}},
    history:{replaceState:(_state,_title,url)=>{context.location.href=url}},setTimeout:()=>{},setInterval:()=>{}};
@@ -125,4 +125,11 @@ test('entrada por palavra-passe impede pedidos concorrentes',async()=>{
  const app=await setup();let finish;app.auth.signInWithPassword=options=>{app.calls.password.push(options);return new Promise(resolve=>{finish=resolve})};
  app.el('login-email').value='teste@example.org';app.el('login-password').value='Exemplo-falso-123';
  const first=app.submit('login-form');await app.submit('login-form');assert.equal(app.calls.password.length,1);finish({error:null});await first;
+});
+
+test('login com membro redireciona apenas para páginas internas autorizadas',async()=>{
+ const app=await setup({href:redirect+'?next=menu.html',user:{id:'test-user'},member:{nome:'Teste'}});assert.equal(app.context.location.replaced,'menu.html');
+ for(const next of ['https://attacker.example','//attacker.example','menu.html?next=evil']){
+  const other=await setup({href:redirect+'?next='+encodeURIComponent(next),user:{id:'test-user'},member:{nome:'Teste'}});assert.equal(other.context.location.replaced,undefined);
+ }
 });

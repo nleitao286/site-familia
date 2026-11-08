@@ -33,7 +33,10 @@ function versions(t){
    seen.add(raw);list.push({raw,data,source,at:at||"",topic:t})
   }catch(e){}
  }
- add(localStorage.getItem(t.key),"Estado atual neste navegador");
+ const current=window.FamilySync.records[t.id];
+ if(current){add(JSON.stringify(current.data),"Cópia Supabase deste navegador");for(const version of current.history||[])add(JSON.stringify(version.data),version.reason,version.at)}
+ for(const [key,raw] of Object.entries(window.FamilySync.export().journals)){if(!key.includes(":"+t.id+":"))continue;try{const journal=JSON.parse(raw);if(journal.format==="family-draft"){add(JSON.stringify(journal.data),journal.archived?"Cópia importada, por comparar":journal.dirty?"Rascunho por confirmar":"Cópia já confirmada",journal.at);for(const version of journal.history||[])add(JSON.stringify(version.data),version.reason,version.at)}}catch{}}
+ add(localStorage.getItem(t.key),"Cópia antiga neste navegador");
  for(const v of history()[t.id]||[])add(v.data,v.reason||"Cópia automática",v.at);
  add(snapshots()[t.id],"Último estado descarregado do GitHub");
  if(t.id==="refeicoes"){
@@ -48,18 +51,9 @@ function summary(data,t){
  return data.length+" "+(t.id==="compras"?"artigos":"viaturas");
 }
 function restore(ver){
- if(!confirm("Restaurar esta versão de "+ver.topic.label+"? Isto substitui os dados atuais deste tema neste navegador e marca-os como não publicados no GitHub."))return;
- try{
-  const current=localStorage.getItem(ver.topic.key);
-  if(current&&current!==ver.raw){
-   const all=history();const list=all[ver.topic.id]||(all[ver.topic.id]=[]);
-   list.unshift({at:new Date().toISOString(),reason:"Antes de recuperar versão anterior",data:current});list.splice(10);localStorage.setItem(historyKey,JSON.stringify(all));
-  }
-  localStorage.setItem(ver.topic.key,ver.raw);
-  const dirty=read(dirtyKey,{});dirty[ver.topic.id]=true;localStorage.setItem(dirtyKey,JSON.stringify(dirty));
-  alert("Dados restaurados apenas neste navegador. Abre "+ver.topic.label+" e depois publica no GitHub através de Acesso de edição.");
-  render();
- }catch(e){alert("Não foi possível restaurar dados neste navegador: "+e.message)}
+ if(!confirm("Conservar as cópias existentes e recuperar esta versão para comparar com o Supabase?"))return;
+ try{window.FamilySync.restore(ver.topic.id,ver.data);alert("Cópia recuperada. Abre o tema e compara as versões antes de guardar no Supabase.");render()}
+ catch(error){alert("Não foi possível recuperar: "+error.message)}
 }
 function render(){
  const root=$("recovery-content");root.replaceChildren();
@@ -87,9 +81,10 @@ function render(){
 }
 $("recovery-refresh").onclick=render;
 $("recovery-download").onclick=()=>{
- const backup={format:"familia-local-recovery",exportedAt:new Date().toISOString(),topics:Object.fromEntries(topicConfig.map(t=>[t.id,versions(t).map(v=>({source:v.source,at:v.at,data:v.data}))]))};
+ const backup=window.FamilySync.export();
  const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="recuperacao-familia-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
+if(!window.FamilySync?.authorised)throw Error("É necessário iniciar sessão.");
 render();
 })();
