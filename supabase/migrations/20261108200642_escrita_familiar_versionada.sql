@@ -43,7 +43,10 @@ begin
 end $$;
 -- CREATE é necessário só para transferir a propriedade, e é revogado de seguida.
 grant create on schema private to familia_rpc_writer;
+-- O postgres gerido precisa de SET ROLE explícito para transferir a propriedade.
+do $$ begin execute format('grant familia_rpc_writer to %I',current_user); end $$;
 alter function private.guardar_familia_dados_versionados(text,jsonb,bigint) owner to familia_rpc_writer;
+do $$ begin execute format('revoke familia_rpc_writer from %I',current_user); end $$;
 revoke create on schema private from familia_rpc_writer;
 revoke all on function private.guardar_familia_dados_versionados(text,jsonb,bigint) from public,anon;
 grant usage on schema private to authenticated;
