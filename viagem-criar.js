@@ -1,6 +1,8 @@
 import { supabase } from './supabase-client.js?v=20261108-private1';
 const $ = (id) => document.getElementById(id);
 const msg = $('access-message');
+let authorizedUser = null;
+let saving = false;
 
 async function authorize() {
   try {
@@ -21,7 +23,9 @@ async function authorize() {
       msg.textContent = 'Esta área é reservada ao administrador da família.';
       return;
     }
+    authorizedUser = user;
     document.documentElement.dataset.auth = 'ready';
+    await refreshTrips();
   } catch {
     msg.textContent = 'Não foi possível confirmar as permissões. Verifica a ligação e volta a tentar.';
   }
@@ -33,6 +37,15 @@ function formatDate(iso) {
   if (!iso) return 'Não definido';
   const [y,m,d] = iso.split('-');
   return d + '/' + m + '/' + y;
+}
+function tripInput() {
+  return {
+    titulo: val('trip-name'), destino: val('trip-destination'),
+    data_inicio: val('trip-start'), data_fim: val('trip-end'),
+    descricao: val('trip-description'), estado: 'rascunho',
+    limite_participantes: val('trip-limit') ? Number(val('trip-limit')) : null,
+    prazo_inscricao: val('trip-deadline') || null
+  };
 }
 function preview() {
   const title = val('trip-name');
@@ -51,7 +64,7 @@ function preview() {
   $('trip-errors').hidden = errors.length === 0;
   $('trip-errors').textContent = errors.join('\n');
   $('trip-result').hidden = true;
-  if (errors.length) return;
+  if (errors.length) return false;
   const lines = [
     'Viagem: ' + title,
     'Destino: ' + dest,
@@ -66,8 +79,51 @@ function preview() {
   $('trip-preview').textContent = lines.join('\n');
   $('trip-result').hidden = false;
   $('trip-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  return true;
 }
-form.addEventListener('submit', event => { event.preventDefault(); preview(); });
+
+async function refreshTrips() {
+  const list = $('trip-list');
+  if (!list || !authorizedUser) return;
+  list.textContent = 'A consultar viagens no Supabase…';
+  const { data, error } = await supabase.from('viagens')
+    .select('id,titulo,destino,data_inicio,data_fim,estado,criado_em')
+    .order('data_inicio', { ascending: true });
+  if (error) { list.textContent = 'Não foi possível consultar as viagens: ' + error.message; return; }
+  list.replaceChildren();
+  if (!data.length) { list.textContent = 'Ainda não existem viagens registadas.'; return; }
+  for (const trip of data) {
+    const p = document.createElement('p');
+    p.textContent = trip.titulo + ' · ' + trip.destino + ' · ' +
+      formatDate(trip.data_inicio) + ' a ' + formatDate(trip.data_fim) + ' · ' + trip.estado;
+    list.append(p);
+  }
+}
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (saving || !authorizedUser || !preview()) return;
+  if (!window.confirm('Criar esta viagem como rascunho no Supabase?')) return;
+  saving = true;
+  const btn = $('trip-save');
+  btn.disabled = true;
+  const status = $('trip-save-status');
+  status.textContent = 'A guardar no Supabase…';
+  try {
+    const { error } = await supabase.from('viagens').insert({
+      ...tripInput(), criado_por: authorizedUser.id
+    });
+    if (error) throw error;
+    status.textContent = '✓ Viagem guardada no Supabase como rascunho.';
+    form.reset();
+    $('trip-result').hidden = true;
+    await refreshTrips();
+  } catch (error) {
+    status.textContent = 'Não foi possível guardar. Conserva os dados e tenta novamente: ' + (error.message || String(error));
+  } finally {
+    saving = false;
+    btn.disabled = false;
+  }
+});
 form.addEventListener('reset', () => {
   $('trip-result').hidden = true;
   $('trip-errors').hidden = true;
