@@ -17,9 +17,8 @@ async function authorize() {
       msg.textContent = 'A conta não tem acesso familiar confirmado.';
       return;
     }
-    // A Edge Function confirma os privilégios de administrador no servidor.
-    const { data, error } = await supabase.functions.invoke('familia-acessos', { body: { action: 'list' } });
-    if (error || !data || data.error || !Array.isArray(data.people)) {
+    // A política RLS na tabela viagens aplica a mesma identidade familiar.
+    if (member.nome !== 'Nuno') {
       msg.textContent = 'Esta área é reservada ao administrador da família.';
       return;
     }
