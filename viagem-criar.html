@@ -37,7 +37,7 @@ html[data-auth="ready"] #access { display:none }
 </nav></header>
 <main>
 <section class="hero hero-inner-page"><div class="hero-inner"><div class="eyebrow">VIAGENS / ADMINISTRAÇÃO</div><h1>CRIAR NOVA VIAGEM</h1><p class="lead">Começa pelos dados essenciais. Podes completar o programa, os participantes e as despesas depois.</p></div></section>
-<div class="trip-note" role="note"><strong>Protótipo de desenvolvimento:</strong> este formulário permite preencher, validar e pré-visualizar os dados. <strong>Não grava no Supabase</strong> nem publica viagens; a integração será feita depois de validar permissões e estrutura de dados.</div>
+<div class="trip-note" role="note"><strong>Versão de desenvolvimento:</strong> este formulário guarda viagens como <strong>rascunho no Supabase</strong>. Apenas o administrador pode criar viagens. As inscrições e a edição dos detalhes ainda não estão disponíveis.</div>
 <section class="panel form-panel">
 <h2>1. Informações principais</h2>
 <form id="trip-form" novalidate>
@@ -46,20 +46,22 @@ html[data-auth="ready"] #access { display:none }
 <div class="trip-field"><label for="trip-destination">Destino *</label><input id="trip-destination" maxlength="160" required placeholder="Ex.: Cabo Pulmo, México"></div>
 <div class="trip-field"><label for="trip-start">Data de início *</label><input id="trip-start" type="date" required></div>
 <div class="trip-field"><label for="trip-end">Data de fim *</label><input id="trip-end" type="date" required></div>
-<div class="trip-field"><label for="trip-status">Estado inicial</label><select id="trip-status"><option value="rascunho">Rascunho (sem inscrições)</option><option value="abertas">Inscrições abertas</option></select></div>
+<div class="trip-field"><label for="trip-status">Estado inicial</label><select id="trip-status"><option value="rascunho">Rascunho (sem inscrições)</option></select></div>
 <div class="trip-field"><label for="trip-limit">Número máximo de participantes</label><input id="trip-limit" type="number" min="1" max="1000" step="1" placeholder="Sem limite"><small>Conta os familiares e os convidados externos.</small></div>
 <div class="trip-field"><label for="trip-deadline">Prazo de inscrição</label><input id="trip-deadline" type="date"><small>Opcional. Deve ser até à data de início.</small></div>
 <div class="trip-field full"><label for="trip-description">Descrição e objetivos</label><textarea id="trip-description" rows="5" maxlength="3000" placeholder="O que se pretende fazer nesta viagem…"></textarea></div>
 </div>
 <p>As inscrições dos familiares serão automáticas quando estiverem abertas. Os convidados externos serão adicionados apenas pelo administrador, sem acesso ao site.</p>
 <p id="trip-errors" role="alert" hidden></p>
-<div class="trip-actions"><button type="submit">PRÉ-VISUALIZAR VIAGEM</button><button type="reset" class="outline">LIMPAR FORMULÁRIO</button></div>
+<div class="trip-actions"><button type="submit" id="trip-save">PRÉ-VISUALIZAR E GUARDAR RASCUNHO</button><button type="reset" class="outline">LIMPAR FORMULÁRIO</button></div>
+<p id="trip-save-status" role="status" aria-live="polite"></p>
 </form>
 </section>
 <section class="panel" id="trip-result" hidden aria-live="polite">
 <h2>Pré-visualização</h2><div id="trip-preview" class="trip-preview"></div>
-<p class="subtle">Esta é apenas uma pré-visualização. Nenhum dado foi enviado ou guardado.</p>
+<p class="subtle">A viagem só é guardada depois de confirmares a operação. Aguarda a confirmação do Supabase.</p>
 </section>
+<section class="panel"><h2>Viagens registadas</h2><div id="trip-list" aria-live="polite">A confirmar acesso…</div></section>
 <section class="panel"><h2>Próximas etapas</h2><p>Depois de criada a viagem, a futura área de detalhe permitirá gerir inscrições, convidados, transportes, alojamento, roteiro, orçamento e despesas individualizadas.</p></section>
 </main>
 <footer class="footer">A NOSSA FAMÍLIA · SITE-FAMILIA · Protótipo de viagens</footer>
