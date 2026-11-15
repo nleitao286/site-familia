@@ -32,9 +32,8 @@ async function boot() {
     const {data:member,error:memberError}=await supabase.from('familia_membros').select('nome').eq('user_id',user.id).maybeSingle();
     if(memberError||!member){$('access-message').textContent='Não foi possível confirmar o teu acesso familiar.';return;}
     active=true;document.documentElement.dataset.auth='ready';
-    // A função existente valida permissão administrativa no servidor.
-    const admin=await supabase.functions.invoke('familia-acessos',{body:{action:'list'}});
-    if(!admin.error && Array.isArray(admin.data?.people) && !admin.data.error){$('trip-create').hidden=false;}
+    // A autorização de escrita continua a ser imposta pela RLS no servidor.
+    if (member.nome === 'Nuno') $('trip-create').hidden = false;
     await refresh();
   }catch{$('access-message').textContent='Não foi possível confirmar a sessão. Tenta novamente.';}
 }
