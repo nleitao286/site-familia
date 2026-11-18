@@ -14,7 +14,7 @@ function gate(message, redirect=false) {
   document.documentElement.dataset.familyAuth='pending';
   if ($('auth-message')) $('auth-message').textContent=message;
   if (redirect) {
-    revoked=true;$('auth-copy').hidden=true;store?.deactivate();
+    window.FamilyMealPhoto?.close();revoked=true;$('auth-copy').hidden=true;store?.deactivate();
     for (const timer of Object.values(timers)) clearTimeout(timer);
     location.replace('entrar.html?next='+encodeURIComponent(location.pathname.split('/').pop()||'index.html'));
   }
@@ -98,7 +98,15 @@ async function boot() {
     $('sync-reload').onclick=async()=>{try{await revalidate();if(revoked||document.documentElement.dataset.familyAuth!=='ready')return;for(const topic of topics)await store.refresh(topic);window.FamilyApp?.render()}catch(error){errorMessage(error)}};
     $('sync-copy').onclick=()=>download(store.export());
     $('sync-logout').onclick=async()=>{const {error}=await supabase.auth.signOut({scope:'local'});if(error){errorMessage(Error('Não foi possível terminar a sessão.'));return;}gate('Sessão terminada.',true)};
-    const script=document.createElement('script');script.src=(page==='recuperar'?'recovery.js':'app.js')+'?v=20261108-private1';
+    if(page==='menu'){
+      const {createMealPhoto}=await import('./meal-photo.js?v=20261118-photo1');
+      window.FamilyMealPhoto=createMealPhoto({analyze:async body=>{
+        const {data,error}=await supabase.functions.invoke('familia-prato-foto',{body});
+        if(error){let text='Não foi possível contactar a análise de fotografias. Verifica a ligação e tenta novamente.';try{text=(await error.context.json()).error||text}catch{}throw Error(text)}
+        if(!data?.result)throw Error('A análise não devolveu um resultado válido.');return data.result;
+      }});
+    }
+    const script=document.createElement('script');script.src=(page==='recuperar'?'recovery.js':'app.js')+'?v=20261118-photo1';
     await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(Error('Não foi possível carregar a aplicação.'));document.body.append(script)});
     started=true;render();document.documentElement.dataset.familyAuth='ready';
   } catch(error){gate(error.message);} finally{checking=false;}

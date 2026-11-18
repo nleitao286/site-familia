@@ -1,3 +1,6 @@
 # Configuração da função; não contém credenciais nem configuração remota de Auth.
 [functions.familia-acessos]
 verify_jwt = true
+
+[functions.familia-prato-foto]
+verify_jwt = true
