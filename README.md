@@ -21,6 +21,13 @@ não apaga nenhuma cópia: compara as versões e prepara a versão conciliada.
 permitem conservar e restaurar versões. As cópias antigas do navegador não são
 substituídas silenciosamente. [Migração e recuperação](docs/MIGRACAO-DADOS.md).
 
+## Fotografias de refeições
+
+No almoço/jantar, **Identificar por fotografia** permite usar a câmara ou a
+galeria e rever o prato, a porção e as calorias aproximadas antes de guardar.
+A análise requer uma chave API privada no servidor; sem ela, o menu manual
+continua disponível. [Ativação e privacidade](docs/FOTOGRAFIA-REFEICOES.md).
+
 ## Privacidade histórica
 
 Este repositório é público. Os JSON e o script de importação antigos foram

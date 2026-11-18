@@ -59,6 +59,7 @@ function initMenu(){
  const weekInput=$("week-start");weekInput.value=wk;
  function getMeal(k){const p=m.weeks?.[wk]?.[day]?.[k];return p&&typeof p==="object"?p:{dish:"",salad:false}}
  function setMeal(k,changes){m.weeks??={};m.weeks[wk]??={};m.weeks[wk][day]??={};m.weeks[wk][day][k]={...getMeal(k),...changes};set(KEYS.menu,m)}
+ function energy(meal){const n=meal?.nutrition;if(!n||!Number.isFinite(n.portion_g)||n.portion_g<1||n.portion_g>5000||!Number.isFinite(n.kcal_per_100g)||n.kcal_per_100g<0||n.kcal_per_100g>900)return "";return "≈ "+Math.round(n.portion_g*n.kcal_per_100g/100)+" kcal · "+n.portion_g+" g (estimativa)"}
  function dishOptions(k,current){const arr=Array.isArray(m.dishes[k])?m.dishes[k]:[];const unique=[...new Set([...arr,current].filter(Boolean))];return '<option value="">Escolher…</option>'+unique.map(d=>'<option value="'+safe(d)+'" '+(d===current?"selected":"")+'>'+safe(d)+'</option>').join("")}
  function render(){
   const start=parseDate(wk);
@@ -67,16 +68,28 @@ function initMenu(){
   const fmt=d.toLocaleDateString("pt-PT",{day:"numeric",month:"long"});
   const entries=Object.values(m.weeks?.[wk]||{}).reduce((sum,x)=>sum+["A","J"].filter(k=>x[k]?.dish).length,0);
   $("selected-day").textContent=DAYS[day][0].toUpperCase()+DAYS[day].slice(1)+" · "+fmt+"   ("+entries+"/14)";
-  $("meals").innerHTML=["A","J"].map(k=>{const title=k==="A"?"Almoço":"Jantar",current=getMeal(k);return '<div class="panel"><h2>'+title+'</h2><div class="field"><label for="meal-'+k+'">Escolher prato</label><select id="meal-'+k+'" data-meal="'+k+'">'+dishOptions(k,current.dish)+'</select></div><form class="meal-idea" data-meal="'+k+'" style="margin-top:18px"><label for="meal-new-'+k+'">Nova ideia</label><div class="toolbar"><input style="flex:1;min-width:150px" maxlength="160" id="meal-new-'+k+'" placeholder="Escrever o nome do prato" required><button type="submit">Adicionar e usar</button></div></form><div class="checkline"><input id="salad-'+k+'" type="checkbox" data-salad="'+k+'" '+(current.salad?"checked":"")+'><label for="salad-'+k+'">Fazer salada</label></div></div>'}).join("");
+  $("meals").innerHTML=["A","J"].map(k=>{const title=k==="A"?"Almoço":"Jantar",current=getMeal(k);return '<div class="panel"><h2>'+title+'</h2><div class="field"><label for="meal-'+k+'">Escolher prato</label><select id="meal-'+k+'" data-meal="'+k+'">'+dishOptions(k,current.dish)+'</select></div><form class="meal-idea" data-meal="'+k+'" style="margin-top:18px"><label for="meal-new-'+k+'">Nova ideia</label><div class="toolbar"><input style="flex:1;min-width:150px" maxlength="160" id="meal-new-'+k+'" placeholder="Escrever o nome do prato" required><button type="submit">Adicionar e usar</button></div></form><div class="checkline"><input id="salad-'+k+'" type="checkbox" data-salad="'+k+'" '+(current.salad?"checked":"")+'><label for="salad-'+k+'">Fazer salada</label></div><div class="actions no-print"><button type="button" class="outline" data-photo-meal="'+k+'">IDENTIFICAR POR FOTOGRAFIA</button></div>'+(energy(current)?'<p class="subtle" data-meal-calories="'+k+'">'+safe(energy(current))+'</p>':'')+'</div>'}).join("");
   $("dish-library").innerHTML=["A","J"].map(k=>{const list=Array.isArray(m.dishes[k])?m.dishes[k]:[];return '<div style="margin-bottom:20px"><h3>'+(k==="A"?"Almoços":"Jantares")+' <span class="subtle">('+list.length+')</span></h3>'+(list.length?'<div class="dish-list">'+list.map((s,i)=>'<button type="button" data-remove-dish="'+k+'" data-dish-index="'+i+'" title="Retirar da lista de opções">× '+safe(s)+'</button>').join("")+'</div>':'<p class="subtle">Ainda sem pratos na lista.</p>')+'</div>'}).join("");
   const end=new Date(start);end.setDate(end.getDate()+6);
-  const lines=DAYS.map((label,i)=>{const di=new Date(start);di.setDate(di.getDate()+i);const x=m.weeks?.[wk]?.[i]||{};const cell=k=>{const meal=x[k]||{};return safe(meal.dish||"")+(meal.salad?'<br><small>+ Fazer salada</small>':"")};return '<tr><th>'+safe(label[0].toUpperCase()+label.slice(1))+'<br>'+safe(pretty(isoDate(di)))+'</th><td>'+cell("A")+'</td><td>'+cell("J")+'</td></tr>'}).join("");
+  const lines=DAYS.map((label,i)=>{const di=new Date(start);di.setDate(di.getDate()+i);const x=m.weeks?.[wk]?.[i]||{};const cell=k=>{const meal=x[k]||{};return safe(meal.dish||"")+(energy(meal)?'<br><small>'+safe(energy(meal))+'</small>':'')+(meal.salad?'<br><small>+ Fazer salada</small>':"")};return '<tr><th>'+safe(label[0].toUpperCase()+label.slice(1))+'<br>'+safe(pretty(isoDate(di)))+'</th><td>'+cell("A")+'</td><td>'+cell("J")+'</td></tr>'}).join("");
   $("print-week").innerHTML='<h2>Menu semanal · '+safe(pretty(wk))+' a '+safe(pretty(isoDate(end)))+'</h2><table><thead><tr><th>Dia</th><th>Almoço</th><th>Jantar</th></tr></thead><tbody>'+lines+'</tbody></table>';
  }
  weekInput.onchange=()=>{if(!weekInput.value)return;wk=saturday(weekInput.value);weekInput.value=wk;day=0;render()};
  $("day-tabs").onclick=e=>{const b=e.target.closest("[data-day]");if(!b)return;day=Number(b.dataset.day);render()};
- $("meals").onchange=e=>{const k=e.target.dataset.meal;if(k){setMeal(k,{dish:e.target.value});render();return}const salad=e.target.dataset.salad;if(salad){setMeal(salad,{salad:e.target.checked});render()}};
- $("meals").onsubmit=e=>{const form=e.target.closest(".meal-idea");if(!form)return;e.preventDefault();const k=form.dataset.meal;const name=value("meal-new-"+k);if(!name)return;const list=m.dishes[k]||(m.dishes[k]=[]);if(!list.includes(name))list.push(name);setMeal(k,{dish:name});render();toast("Prato acrescentado.")};
+ $("meals").onchange=e=>{const k=e.target.dataset.meal;if(k){setMeal(k,{dish:e.target.value,nutrition:null});render();return}const salad=e.target.dataset.salad;if(salad){setMeal(salad,{salad:e.target.checked});render()}};
+ $("meals").onsubmit=e=>{const form=e.target.closest(".meal-idea");if(!form)return;e.preventDefault();const k=form.dataset.meal;const name=value("meal-new-"+k);if(!name)return;const list=m.dishes[k]||(m.dishes[k]=[]);if(!list.includes(name))list.push(name);setMeal(k,{dish:name,nutrition:null});render();toast("Prato acrescentado.")};
+ $("meals").onclick=event=>{
+  const button=event.target.closest('[data-photo-meal]');if(!button)return;
+  const type=button.dataset.photoMeal,targetWeek=wk,targetDay=day,targetDate=parseDate(wk);targetDate.setDate(targetDate.getDate()+day);
+  if(!window.FamilyMealPhoto){toast("A opção de fotografia não carregou. Atualiza a página.");return}
+  window.FamilyMealPhoto.open({title:(type==='A'?'Almoço':'Jantar')+' · '+pretty(isoDate(targetDate)),apply:result=>{
+   const next=loadMeals();next.weeks[targetWeek]??={};next.weeks[targetWeek][targetDay]??={};
+   const {dish,...nutrition}=result;next.weeks[targetWeek][targetDay][type]={...(next.weeks[targetWeek][targetDay][type]||{salad:false}),dish,nutrition};
+   if(!next.dishes[type].includes(dish))next.dishes[type].push(dish);
+   if(!set(KEYS.menu,next))return false;
+   m=next;render();toast("Estimativa adicionada. Confirma a gravação no painel acima.");return true;
+  }});
+ };
  $("dish-library").onclick=e=>{const b=e.target.closest("[data-remove-dish]");if(!b)return;const k=b.dataset.removeDish;const ix=Number(b.dataset.dishIndex);if(!confirm("Retirar este prato da lista de opções? As refeições já planeadas não serão apagadas."))return;m.dishes[k].splice(ix,1);set(KEYS.menu,m);render()};
  $("print-menu").onclick=()=>window.print();render();
 }
